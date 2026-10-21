@@ -1,3 +1,3 @@
-import { createStub } from '../stub.js';
+import { createSudoku } from './SudokuGame.js';
 
-export default () => createStub('Sudoku');
+export default createSudoku;
