@@ -1,3 +1,3 @@
-import { createStub } from '../stub.js';
+import { createCrossword } from './CrosswordGame.js';
 
-export default () => createStub('Crucigrama');
+export default createCrossword;

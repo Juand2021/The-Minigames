@@ -1,0 +1,493 @@
+.cw {
+  --line: rgba(255, 255, 255, 0.1);
+  --glow: rgba(255, 111, 181, 0.35);
+  --mine: #ffd6ec;
+  --gold: #ffd166;
+  --bad: #ff6b81;
+  --ease-spring: cubic-bezier(0.34, 1.56, 0.64, 1);
+  --ease-out: cubic-bezier(0.22, 1, 0.36, 1);
+
+  position: relative;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  font-family: ui-rounded, 'SF Pro Rounded', 'Nunito', 'Segoe UI', system-ui, sans-serif;
+}
+
+/* ---------- toast ---------- */
+.cw-toast {
+  position: absolute;
+  top: 70px;
+  left: 50%;
+  z-index: 12;
+  max-width: 92%;
+  padding: 8px 16px;
+  border-radius: 999px;
+  background: rgba(20, 10, 35, 0.85);
+  backdrop-filter: blur(8px);
+  border: 1px solid var(--line);
+  font-size: 0.9rem;
+  font-weight: 600;
+  white-space: nowrap;
+  opacity: 0;
+  pointer-events: none;
+  transform: translate(-50%, -10px);
+}
+.cw-toast.show {
+  animation: cwToast 2.2s var(--ease-out) forwards;
+}
+
+/* ---------- barra de pista ---------- */
+.cw-clue {
+  display: grid;
+  grid-template-columns: 40px 1fr 40px;
+  align-items: center;
+  gap: 6px;
+  min-height: 78px;
+  padding: 6px;
+  border-radius: 18px;
+  background: linear-gradient(145deg, rgba(255, 255, 255, 0.13), rgba(255, 255, 255, 0.05));
+  border: 1px solid rgba(255, 255, 255, 0.16);
+  box-shadow: 0 8px 24px rgba(10, 0, 25, 0.4);
+}
+.cw-nav {
+  width: 40px;
+  height: 52px;
+  border: 0;
+  border-radius: 12px;
+  background: rgba(255, 255, 255, 0.08);
+  color: var(--text);
+  font-size: 1.6rem;
+  line-height: 1;
+  transition: transform 0.15s var(--ease-spring), background-color 0.2s;
+}
+.cw-nav:active {
+  transform: scale(0.88);
+  background: rgba(255, 111, 181, 0.3);
+}
+.cw-clue-body {
+  text-align: center;
+  min-width: 0;
+}
+.cw-clue-body small {
+  display: block;
+  margin-bottom: 3px;
+  color: var(--accent);
+  font-size: 0.7rem;
+  font-weight: 800;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+.cw-clue-body p {
+  margin: 0;
+  font-size: 0.86rem;
+  font-weight: 600;
+  line-height: 1.25;
+  display: -webkit-box;
+  -webkit-line-clamp: 3;
+  line-clamp: 3;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+.cw-clue-body.swap {
+  animation: cwSwap 0.4s var(--ease-out);
+}
+.cw-clue-body.done p {
+  color: #5ee6a8;
+}
+.cw-clue-body.done small::after {
+  content: ' ✓';
+}
+
+/* ---------- cuadrícula ---------- */
+.cw-main {
+  flex: 1;
+  min-height: 0;
+  container-type: size;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.cw-grid {
+  --cell: min(calc(100cqw / var(--cols)), calc(100cqh / var(--rows)));
+  width: calc(var(--cell) * var(--cols));
+  height: calc(var(--cell) * var(--rows));
+  position: relative;
+  display: grid;
+  grid-template-columns: repeat(var(--cols), 1fr);
+  grid-template-rows: repeat(var(--rows), 1fr);
+}
+.cw.enter .cw-grid {
+  animation: cwBoardIn 0.6s var(--ease-spring) both;
+}
+.cw-grid.shake {
+  animation: cwShake 0.38s ease-in-out;
+}
+.cwv {
+  pointer-events: none;
+}
+
+.cw-cursor {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: calc(100% / var(--cols));
+  height: calc(100% / var(--rows));
+  border-radius: 8px;
+  border: 2px solid var(--gold);
+  box-shadow: 0 0 0 2px rgba(255, 209, 102, 0.25), 0 0 16px rgba(255, 209, 102, 0.55);
+  pointer-events: none;
+  z-index: 3;
+  opacity: 0;
+  transition: transform 0.2s var(--ease-out), opacity 0.2s;
+  will-change: transform;
+}
+
+.cwc {
+  position: relative;
+  display: grid;
+  place-items: center;
+  margin: 1px;
+  padding: 0;
+  border: 0;
+  border-radius: 7px;
+  background: rgba(255, 255, 255, 0.13);
+  box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.2), 0 1px 0 rgba(10, 0, 25, 0.35);
+  color: var(--mine);
+  font: inherit;
+  font-size: calc(var(--cell) * 0.58);
+  font-weight: 800;
+  line-height: 1;
+  transition: background-color 0.22s, box-shadow 0.22s, color 0.22s;
+  animation: cwCellIn 0.5s var(--ease-spring) backwards;
+  animation-delay: var(--d, 0ms);
+}
+.cwc.inword {
+  background: rgba(255, 111, 181, 0.3);
+  box-shadow: inset 0 0 0 1px rgba(255, 111, 181, 0.6);
+}
+.cwc.sel {
+  background: rgba(255, 209, 102, 0.3);
+  z-index: 1;
+}
+.cwc.wrong {
+  color: var(--bad);
+  background: rgba(255, 107, 129, 0.25);
+  box-shadow: inset 0 0 0 1.5px rgba(255, 107, 129, 0.8);
+}
+.cwc.revealed {
+  color: var(--gold);
+}
+.cwch {
+  pointer-events: none;
+}
+.cwn {
+  position: absolute;
+  top: 1px;
+  left: 2px;
+  font-style: normal;
+  font-size: calc(var(--cell) * 0.3);
+  font-weight: 700;
+  color: rgba(255, 255, 255, 0.75);
+  pointer-events: none;
+}
+.cwc.pop .cwch {
+  animation: cwPop 0.36s var(--ease-spring);
+}
+.cwc.wave {
+  animation: cwWave 0.65s var(--ease-out) var(--w, 0ms) both;
+  z-index: 2;
+}
+
+/* ---------- herramientas ---------- */
+.cw-tools {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 6px;
+}
+.cwt {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 2px;
+  min-height: 48px;
+  padding: 4px 0;
+  border: 1px solid var(--line);
+  border-radius: 14px;
+  background: rgba(255, 255, 255, 0.07);
+  color: var(--text);
+  font: inherit;
+  transition: transform 0.15s var(--ease-spring), opacity 0.2s;
+}
+.cwt span {
+  font-size: 1.1rem;
+  line-height: 1;
+}
+.cwt em {
+  font-style: normal;
+  font-size: 0.62rem;
+  color: var(--muted);
+}
+.cwt u {
+  position: absolute;
+  top: -6px;
+  right: -2px;
+  min-width: 22px;
+  padding: 1px 6px;
+  border-radius: 999px;
+  background: var(--card);
+  border: 1px solid var(--line);
+  text-decoration: none;
+  font-size: 0.62rem;
+  font-weight: 800;
+  text-align: center;
+}
+.cwt:active:not(:disabled) {
+  transform: scale(0.9);
+}
+.cwt:disabled {
+  opacity: 0.35;
+}
+
+/* ---------- teclado ---------- */
+.cw-kb {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+}
+.kb-row {
+  display: flex;
+  justify-content: center;
+  gap: 4px;
+}
+.cwk {
+  flex: 1 1 0;
+  max-width: 36px;
+  min-height: 46px;
+  padding: 0;
+  border: 1px solid rgba(255, 255, 255, 0.14);
+  border-radius: 10px;
+  background: linear-gradient(180deg, rgba(255, 255, 255, 0.15), rgba(255, 255, 255, 0.05));
+  box-shadow: 0 3px 0 rgba(10, 0, 25, 0.45);
+  color: var(--text);
+  font: inherit;
+  font-size: 1.15rem;
+  font-weight: 800;
+  transition: transform 0.1s var(--ease-spring), box-shadow 0.1s;
+  animation: cwKeyIn 0.5s var(--ease-spring) backwards;
+  animation-delay: calc(0.45s + var(--d, 0ms));
+}
+.cwk.wide {
+  max-width: 56px;
+  flex: 1.5 1 0;
+  background: linear-gradient(180deg, rgba(255, 111, 181, 0.45), rgba(255, 111, 181, 0.2));
+}
+.cwk:active {
+  transform: translateY(2px) scale(0.95);
+  box-shadow: 0 1px 0 rgba(10, 0, 25, 0.45);
+}
+
+/* ---------- lista de pistas ---------- */
+.cw-sheet {
+  position: absolute;
+  inset: -8px -16px -16px;
+  z-index: 30;
+  display: flex;
+  align-items: flex-end;
+  background: rgba(10, 0, 25, 0.6);
+  backdrop-filter: blur(4px);
+}
+.cw-sheet[hidden] {
+  display: none;
+}
+.cw-sheet.open {
+  animation: cwFade 0.25s ease-out;
+}
+.cw-sheet.open .cw-sheet-card {
+  animation: cwSheet 0.4s var(--ease-out);
+}
+.cw-sheet-card {
+  width: 100%;
+  max-height: 82%;
+  display: flex;
+  flex-direction: column;
+  border-radius: 24px 24px 0 0;
+  background: #36224f;
+  border-top: 1px solid rgba(255, 255, 255, 0.2);
+  box-shadow: 0 -12px 40px rgba(0, 0, 0, 0.4);
+}
+.cw-sheet-card header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 14px 18px 6px;
+}
+.cw-sheet-card h3 {
+  margin: 0;
+  font-size: 1.1rem;
+}
+.cw-x {
+  width: 40px;
+  height: 40px;
+  border: 0;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.1);
+  color: var(--text);
+  font-size: 1rem;
+}
+.cw-sheet-body {
+  overflow-y: auto;
+  padding: 0 18px 22px;
+  overscroll-behavior: contain;
+  touch-action: pan-y;
+}
+.cw-sheet-body h4 {
+  margin: 14px 0 6px;
+  color: var(--accent);
+  font-size: 0.78rem;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+}
+.cw-sheet-body ol {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  gap: 6px;
+}
+.cw-sheet li {
+  display: flex;
+  gap: 10px;
+  padding: 10px 12px;
+  border-radius: 12px;
+  background: rgba(255, 255, 255, 0.07);
+  font-size: 0.85rem;
+  line-height: 1.3;
+}
+.cw-sheet li b {
+  color: var(--gold);
+  min-width: 1.2em;
+}
+.cw-sheet li.done {
+  opacity: 0.5;
+  text-decoration: line-through;
+}
+
+/* ---------- estados ---------- */
+.cw.urgent .cw-clue {
+  animation: cwUrgent 1s ease-in-out infinite;
+}
+.cw.won .cw-tools,
+.cw.won .cw-kb {
+  opacity: 0.25;
+  pointer-events: none;
+  transition: opacity 0.4s;
+}
+
+/* ---------- keyframes ---------- */
+@keyframes cwCellIn {
+  from {
+    opacity: 0;
+    transform: scale(0.4) translateY(8px);
+  }
+}
+@keyframes cwKeyIn {
+  from {
+    opacity: 0;
+    transform: translateY(30px) scale(0.85);
+  }
+}
+@keyframes cwBoardIn {
+  from {
+    opacity: 0;
+    transform: scale(0.92);
+  }
+}
+@keyframes cwPop {
+  0% {
+    transform: scale(0.3);
+    opacity: 0;
+  }
+  60% {
+    transform: scale(1.3);
+    opacity: 1;
+  }
+  100% {
+    transform: scale(1);
+  }
+}
+@keyframes cwWave {
+  0%,
+  100% {
+    transform: scale(1);
+    filter: none;
+  }
+  40% {
+    transform: scale(1.22);
+    filter: brightness(1.8) drop-shadow(0 0 8px var(--glow));
+  }
+}
+@keyframes cwShake {
+  20% {
+    transform: translateX(-6px);
+  }
+  40% {
+    transform: translateX(5px);
+  }
+  60% {
+    transform: translateX(-4px);
+  }
+  80% {
+    transform: translateX(2px);
+  }
+}
+@keyframes cwSwap {
+  from {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+}
+@keyframes cwToast {
+  0% {
+    opacity: 0;
+    transform: translate(-50%, -10px) scale(0.9);
+  }
+  12%,
+  80% {
+    opacity: 1;
+    transform: translate(-50%, 0) scale(1);
+  }
+  100% {
+    opacity: 0;
+    transform: translate(-50%, -6px);
+  }
+}
+@keyframes cwUrgent {
+  50% {
+    box-shadow: 0 0 0 3px rgba(255, 107, 129, 0.7), 0 0 26px rgba(255, 107, 129, 0.45);
+  }
+}
+@keyframes cwFade {
+  from {
+    opacity: 0;
+  }
+}
+@keyframes cwSheet {
+  from {
+    transform: translateY(100%);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .cw *,
+  .cw *::before,
+  .cw *::after {
+    animation-duration: 0.01ms !important;
+    animation-delay: 0ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}

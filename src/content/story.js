@@ -34,6 +34,17 @@ export const sudokuToasts = {
   win: '¡Sudoku resuelto! Eres increíble 💜',
 };
 
+// Mensajes cortos del Crucigrama.
+export const crosswordToasts = {
+  start: 'Ojo: todas las pistas hablan de nosotros 👀',
+  pickFirst: 'Toca una casilla primero 😉',
+  word: ['¡Palabra completa! ✨', '¡Esa la sabías! 💅', '¡Me conoces demasiado bien! 💜', '¡Imparable! 🚀'],
+  wrong: ['Hay letras que no cuadran 🙈', 'Alguna falló… yo no digo cuál 😏', 'Casi, casi 😅'],
+  allGood: 'Todo bien por ahora 💚',
+  hint: ['Te regalo una letra, pero me debes un abrazo 🤗', 'Trampita detectada 😏', 'Solo por esta vez 💡'],
+  win: '¡Crucigrama completo! Me conoces mejor que nadie 💜',
+};
+
 export const loses = [
   '¡Se acabó el tiempo! Pero no pasa nada, inténtalo otra vez.',
   'El reloj ganó esta ronda. La revancha es gratis.',

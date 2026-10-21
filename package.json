@@ -6,7 +6,9 @@
   "scripts": {
     "dev": "vite --host",
     "build": "vite build",
-    "preview": "vite preview --host"
+    "preview": "vite preview --host",
+    "crossword": "node scripts/build-crossword.mjs",
+    "test:sudoku": "node scripts/test-sudoku.mjs"
   },
   "dependencies": {
     "phaser": "^3.90.0"
