@@ -1,5 +1,6 @@
 // Todo el pixel-art se dibuja por código (sin archivos de imagen).
 import { R, W, H, RAIL, LW, LH, POCKETS } from './physics.js';
+import { FRONT } from './rotation.js';
 
 export const BALL_COLORS = {
   1: '#f5d33b',
@@ -30,33 +31,73 @@ const rect = (g, x, y, w, h, color) => {
   g.fillRect(x, y, w, h);
 };
 
-/* ---------- bolas ---------- */
-export function makeBallSprite(id) {
+/* ---------- bolas (esferas con orientación 3D) ---------- */
+const LIGHT = (() => {
+  const l = [-0.45, -0.6, 0.66];
+  const n = Math.hypot(...l);
+  return l.map((v) => v / n);
+})();
+const HALF = (() => {
+  const h = [LIGHT[0], LIGHT[1], LIGHT[2] + 1];
+  const n = Math.hypot(...h);
+  return h.map((v) => v / n);
+})();
+const INK = [10, 8, 20];
+
+// Color de la textura en el punto p de la esfera unidad (espacio de la textura).
+function texColor(id, p) {
+  if (id === 0) {
+    // blanca con puntitos para que se note cómo gira
+    for (const [ax, ay, az] of [[1, 0, 0], [-1, 0, 0], [0, 1, 0], [0, -1, 0], [0, 0, 1], [0, 0, -1]]) {
+      if (p[0] * ax + p[1] * ay + p[2] * az > 0.965) return [200, 70, 80];
+    }
+    return [248, 246, 238];
+  }
+  const base = hex(colorOf(id));
+  if (Math.abs(p[0]) > 0.84) return id === 8 ? [250, 248, 240] : [255, 255, 255]; // círculo del número
+  if (id > 8 && Math.abs(p[1]) > 0.5) return [250, 248, 240]; // rayada: blanco fuera de la franja
+  return base;
+}
+
+export function createBallCanvas() {
+  return canvas(R * 2, R * 2);
+}
+
+// Dibuja la bola `id` con orientación `rot` en el canvas [c, g] (sin suavizado: pixel-art).
+export function paintBall([c, g], id, rot) {
   const D = R * 2;
-  const [c, g] = canvas(D, D);
   const img = g.createImageData(D, D);
-  const base = id === 0 ? [248, 246, 238] : hex(colorOf(id));
-  const white = [250, 248, 240];
   for (let y = 0; y < D; y++) {
     for (let x = 0; x < D; x++) {
-      const dx = x + 0.5 - R;
-      const dy = y + 0.5 - R;
-      const d = Math.hypot(dx, dy);
-      if (d > R) continue;
-      let col = base;
-      if (id > 8 && Math.abs(dy) > 2.3) col = white;
-      if (id !== 0 && Math.hypot(dx, dy) < 2.1) col = id === 8 ? white : [255, 255, 255];
-      // sombreado: más oscuro abajo a la derecha
-      const shade = (dx + dy) / (2 * R);
-      col = mix(col, [10, 8, 20], Math.max(0, shade * 0.42));
-      if (d > R - 0.9) col = mix(col, [10, 8, 20], 0.5);
-      if ((x === 2 && y === 2) || (x === 3 && y === 2) || (x === 2 && y === 3)) col = mix(col, [255, 255, 255], 0.75);
-      const k = (y * D + x) * 4;
-      img.data.set([...col, 255], k);
+      const dx = (x + 0.5 - R) / R;
+      const dy = (y + 0.5 - R) / R;
+      const r2 = dx * dx + dy * dy;
+      if (r2 > 1) continue;
+      const nz = Math.sqrt(1 - r2);
+      // p = Rᵀ · n (vista → textura)
+      const p = [
+        rot[0] * dx + rot[3] * dy + rot[6] * nz,
+        rot[1] * dx + rot[4] * dy + rot[7] * nz,
+        rot[2] * dx + rot[5] * dy + rot[8] * nz,
+      ];
+      let col = texColor(id, p);
+      const diff = Math.max(0, dx * LIGHT[0] + dy * LIGHT[1] + nz * LIGHT[2]);
+      const shade = Math.round((0.5 + 0.5 * diff) * 5) / 5; // 5 niveles: sombreado "de pixel"
+      col = mix([0, 0, 0], col, shade);
+      col = mix(col, INK, Math.max(0, 0.55 - shade) * 0.5);
+      if (dx * HALF[0] + dy * HALF[1] + nz * HALF[2] > 0.972) col = mix(col, [255, 255, 255], 0.8);
+      if (r2 > (1 - 0.9 / R) ** 2) col = mix(col, INK, 0.65);
+      img.data.set([...col, 255], (y * D + x) * 4);
     }
   }
   g.putImageData(img, 0, 0);
-  return c;
+}
+
+// Sprite estático (bandejas de bolas embocadas): el número mira al frente.
+export function makeBallSprite(id) {
+  const cg = createBallCanvas();
+  paintBall(cg, id, FRONT);
+  return cg[0];
 }
 
 export function makeBallShadow() {

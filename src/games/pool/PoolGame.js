@@ -2,7 +2,8 @@ import './pool.css';
 import { Match } from './match.js';
 import { step, isMoving, castRay, canPlaceCue, SUBSTEP, VMAX, R, W, H, RAIL, LW, LH } from './physics.js';
 import { chooseShot, choosePlacement } from './ai.js';
-import { makeBallSet, makeBallShadow, makeTable, drawVillain, drawPlayer } from './sprites.js';
+import { makeBallSet, makeBallShadow, makeTable, drawVillain, drawPlayer, createBallCanvas, paintBall } from './sprites.js';
+import { rollRot, randomRot } from './rotation.js';
 import { poolLines, poolIntro } from '../../content/story.js';
 import { sfx } from '../shared/sfx.js';
 import { burst } from '../shared/confetti.js';
@@ -56,6 +57,14 @@ export function createPool() {
     sprites = makeBallSet();
     shadowImg = makeBallShadow();
     tableImg = makeTable();
+    // Cada bola es una esfera con su propia orientación (para que se vea rodar).
+    for (const b of match.balls) {
+      b.cg = createBallCanvas();
+      b.rot = randomRot(R, b.id !== 0);
+      b.lx = b.x;
+      b.ly = b.y;
+      paintBall(b.cg, b.id, b.rot);
+    }
 
     root = document.createElement('div');
     root.className = 'pool';
@@ -386,6 +395,7 @@ export function createPool() {
       }
       if (!isMoving(match.balls) && !sinking) finishShot();
     }
+    spinBalls(phase === 'roll');
 
     for (const p of particles) {
       p.x += p.vx * dt;
@@ -396,6 +406,22 @@ export function createPool() {
     particles = particles.filter((p) => p.life > 0);
 
     draw();
+  }
+
+  // Gira la textura de cada bola según lo que avanzó (rodadura sin deslizar).
+  function spinBalls(rolling) {
+    for (const b of match.balls) {
+      if (rolling && !b.pocketed) {
+        const dx = b.x - b.lx;
+        const dy = b.y - b.ly;
+        if (dx * dx + dy * dy > 1e-4) {
+          b.rot = rollRot(b.rot, dx, dy, R);
+          paintBall(b.cg, b.id, b.rot);
+        }
+      }
+      b.lx = b.x;
+      b.ly = b.y;
+    }
   }
 
   const angleDiff = (a, b) => Math.atan2(Math.sin(b - a), Math.cos(b - a));
@@ -478,12 +504,12 @@ export function createPool() {
       const y = b.sink.y + (b.sink.py - b.sink.y) * t;
       const s = Math.max(2, Math.round(R * 2 * (1 - t * 0.7)));
       g.globalAlpha = 1 - t * 0.6;
-      g.drawImage(sprites[b.id], Math.round(x + RAIL - s / 2), Math.round(y + RAIL - s / 2), s, s);
+      g.drawImage(b.cg[0], Math.round(x + RAIL - s / 2), Math.round(y + RAIL - s / 2), s, s);
       g.globalAlpha = 1;
       return;
     }
     g.drawImage(shadowImg, Math.round(b.x + RAIL - R), Math.round(b.y + RAIL - R + 1));
-    g.drawImage(sprites[b.id], Math.round(b.x + RAIL - R), Math.round(b.y + RAIL - R));
+    g.drawImage(b.cg[0], Math.round(b.x + RAIL - R), Math.round(b.y + RAIL - R));
   }
 
   function draw() {
