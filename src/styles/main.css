@@ -10,7 +10,11 @@
   --radius: 16px;
 }
 
-* { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+* {
+  box-sizing: border-box;
+  -webkit-tap-highlight-color: transparent;
+  touch-action: manipulation; /* sin zoom por doble toque */
+}
 
 html, body {
   margin: 0;

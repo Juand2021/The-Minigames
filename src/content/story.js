@@ -45,6 +45,16 @@ export const crosswordToasts = {
   win: '¡Crucigrama completo! Me conoces mejor que nadie 💜',
 };
 
+// Cinemática de inicio del billar. who: 'V' = el Quiz, 'P' = Sofía. La última línea es de Sofía y abre el botón "lista".
+export const poolIntro = [
+  { who: 'V', text: '¡JAJAJA! Por fin llegas… Soy el Quiz de Fenómenos de Transporte 📄😈' },
+  { who: 'P', text: 'Ay no… ¿tú otra vez? Si ya me arruinaste medio semestre 😩' },
+  { who: 'V', text: 'Reprobarte es mi pasión. Pero hoy no será con tinta… ¡será con taco y bolas! 🎱' },
+  { who: 'P', text: '¿Un billar? Ahora sí te arrepentiste, hoja con patas 😏' },
+  { who: 'V', text: 'Si pierdes, me presentas mañana a las 7 a. m. Si ganas… me hago pedazos 📝💥' },
+  { who: 'P', text: 'Trato hecho. Voy a romper ese triángulo y a dejarte sin nota 💜' },
+];
+
 // Billar: el rival es el Quiz de Fenómenos de Transporte. Cada lista se elige al azar.
 export const poolLines = {
   intro: [

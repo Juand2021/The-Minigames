@@ -6,4 +6,8 @@ export const LEVELS = [
   { id: 'craft', icon: '⛏️', name: 'Minecraft', seconds: 8 * 60 },
 ];
 
+// SOLO PRUEBAS: true deja abiertos todos los niveles desde el mapa.
+// Volver a poner false antes de entregar el juego.
+export const UNLOCK_ALL = true;
+
 export const STORAGE_KEY = 'juego-especial:v1';

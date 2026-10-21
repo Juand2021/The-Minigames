@@ -1,4 +1,4 @@
-import { LEVELS } from '../config.js';
+import { LEVELS, UNLOCK_ALL } from '../config.js';
 import { cover, intros, wins, loses } from '../content/story.js';
 import { reward } from '../content/reward.js';
 import { loadProgress, saveProgress, resetProgress } from './progress.js';
@@ -55,9 +55,9 @@ export class GameShell {
   }
 
   showMap() {
-    if (this.progress.unlocked >= LEVELS.length) return this.showFinal();
+    if (!UNLOCK_ALL && this.progress.unlocked >= LEVELS.length) return this.showFinal();
     const nodes = LEVELS.map((l, i) => {
-      const state = i < this.progress.unlocked ? 'done' : i === this.progress.unlocked ? 'open' : 'locked';
+      const state = i < this.progress.unlocked ? 'done' : i === this.progress.unlocked || UNLOCK_ALL ? 'open' : 'locked';
       const mark = state === 'done' ? '✅' : state === 'locked' ? '🔒' : l.icon;
       return `<button class="node ${state}" data-i="${i}" ${state === 'locked' ? 'disabled' : ''}>
         <span class="node-icon">${mark}</span>

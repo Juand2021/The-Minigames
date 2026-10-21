@@ -3,21 +3,26 @@ import { Match } from './match.js';
 import { step, isMoving, castRay, canPlaceCue, SUBSTEP, VMAX, R, W, H, RAIL, LW, LH } from './physics.js';
 import { chooseShot, choosePlacement } from './ai.js';
 import { makeBallSet, makeBallShadow, makeTable, drawVillain, drawPlayer } from './sprites.js';
-import { poolLines } from '../../content/story.js';
+import { poolLines, poolIntro } from '../../content/story.js';
 import { sfx } from '../shared/sfx.js';
 import { burst } from '../shared/confetti.js';
 
 const pick = (arr) => arr[Math.floor(Math.random() * arr.length)];
 const clamp = (v, a, b) => Math.max(a, Math.min(b, v));
-const MAX_PULL = 75; // distancia de arrastre (px lógicos) para potencia máxima
-const MIN_DRAG = 12;
+const MIN_DRAG = 12; // arrastres muy cerca de la blanca se ignoran
 
 export function createPool() {
   let root, ctx, cv, g, mainEl, bubbleEl, bannerEl, powerEl, fireBtn, fineL, fineR, villEl, heroEl, hintEl;
+  let powerBox, thumbEl, powerLabel, introEl;
+  let introStep = 0;
+  let introTyping = false;
+  let introTimer = 0;
+  let draggingPower = false;
+  let lastPct = -1;
   let trayEls = {};
   let match;
   let tableImg, shadowImg, sprites;
-  let phase = 'aim';
+  let phase = 'intro';
   let aim = { angle: -Math.PI / 2, power: 0.6 };
   let strike = null;
   let aiAim = null;
@@ -69,12 +74,24 @@ export function createPool() {
         <div class="pl-banner"><strong></strong><span></span></div>
       </div>
       <div class="pl-controls">
-        <button class="fine" data-fine="-1" aria-label="Girar a la izquierda">◀</button>
-        <div class="pl-power"><i></i><span>POTENCIA</span></div>
-        <button class="fine" data-fine="1" aria-label="Girar a la derecha">▶</button>
-        <button class="pl-fire" data-act="fire">¡TIRAR!</button>
+        <div class="pl-power" aria-label="Potencia"><i></i><em class="pl-thumb"></em><span>POTENCIA</span></div>
+        <div class="pl-row">
+          <button class="fine" data-fine="-1" aria-label="Girar a la izquierda">◀</button>
+          <button class="pl-fire" data-act="fire">¡TIRAR!</button>
+          <button class="fine" data-fine="1" aria-label="Girar a la derecha">▶</button>
+        </div>
       </div>
-      <p class="pl-hint"></p>`;
+      <p class="pl-hint"></p>
+      <div class="pl-intro">
+        <button class="pi-skip">Saltar ⏭</button>
+        <div class="pi-char pi-vill"><canvas></canvas></div>
+        <div class="pi-bubble" data-speaker="V">
+          <b></b><p></p>
+          <i class="pi-next">Toca para continuar ▸</i>
+          <button class="pi-ready" hidden>¡Estoy lista para jugar! 🎱</button>
+        </div>
+        <div class="pi-char pi-hero"><canvas></canvas></div>
+      </div>`;
 
     cv = root.querySelector('.pl-canvas');
     g = cv.getContext('2d');
@@ -82,14 +99,22 @@ export function createPool() {
     mainEl = root.querySelector('.pl-main');
     bubbleEl = root.querySelector('.pl-bubble p');
     bannerEl = root.querySelector('.pl-banner');
-    powerEl = root.querySelector('.pl-power i');
+    powerBox = root.querySelector('.pl-power');
+    powerEl = powerBox.querySelector('i');
+    thumbEl = powerBox.querySelector('.pl-thumb');
+    powerLabel = powerBox.querySelector('span');
     fireBtn = root.querySelector('.pl-fire');
     [fineL, fineR] = root.querySelectorAll('.fine');
     hintEl = root.querySelector('.pl-hint');
     villEl = root.querySelector('.pl-vill');
     heroEl = root.querySelector('.pl-hero');
+    introEl = root.querySelector('.pl-intro');
     drawVillain(villEl);
     drawPlayer(heroEl);
+    drawVillain(introEl.querySelector('.pi-vill canvas'));
+    drawPlayer(introEl.querySelector('.pi-hero canvas'));
+    villEl.style.visibility = 'hidden';
+    heroEl.style.visibility = 'hidden';
     root.querySelectorAll('.tray').forEach((t) => (trayEls[t.dataset.who] = t.querySelector('.slots')));
     refreshTrays();
   }
@@ -154,16 +179,14 @@ export function createPool() {
     fireBtn.disabled = !(aimOk || placing);
     fireBtn.textContent = placing ? 'LISTO ✔' : '¡TIRAR!';
     fineL.disabled = fineR.disabled = !aimOk;
-    powerEl.style.width = `${Math.round(aim.power * 100)}%`;
+    powerBox.classList.toggle('off', !aimOk);
     hintEl.textContent = placing
       ? 'Toca o arrastra en la mesa para colocar la blanca'
       : aimOk
-        ? 'Arrastra desde lejos para apuntar · más lejos = más fuerza'
-        : phase === 'roll' || phase === 'strike'
+        ? 'Arrastra en la mesa para apuntar · desliza la barra para la potencia'
+        : phase === 'roll' || phase === 'strike' || phase === 'intro' || match.winner
           ? ''
-          : match.winner
-            ? ''
-            : 'Turno del Quiz…';
+          : 'Turno del Quiz…';
   }
 
   function defaultAim() {
@@ -464,7 +487,13 @@ export function createPool() {
   }
 
   function draw() {
-    powerEl.style.width = `${Math.round(aim.power * 100)}%`;
+    const pct = Math.round(aim.power * 100);
+    if (pct !== lastPct) {
+      lastPct = pct;
+      powerEl.style.width = `${pct}%`;
+      thumbEl.style.left = `${pct}%`;
+      powerLabel.textContent = `POTENCIA ${pct}%`;
+    }
     g.clearRect(0, 0, LW, LH);
     g.drawImage(tableImg, 0, 0);
     const human = match.turn === 'P' && !ended;
@@ -511,9 +540,7 @@ export function createPool() {
       const c = match.cue;
       const d = Math.hypot(c.x - p.x, c.y - p.y);
       if (d < MIN_DRAG) return;
-      aim.angle = Math.atan2(c.y - p.y, c.x - p.x);
-      aim.power = clamp((d - MIN_DRAG) / MAX_PULL, 0.05, 1);
-      setControls();
+      aim.angle = Math.atan2(c.y - p.y, c.x - p.x); // solo dirección; la potencia va en la barra
     } else if (phase === 'place' && match.turn === 'P') {
       const x = clamp(p.x, R, W - R);
       const y = clamp(p.y, R, H - R);
@@ -542,6 +569,95 @@ export function createPool() {
     fineTimer = setInterval(tick, 40);
   }
   const fineStop = () => clearInterval(fineTimer);
+
+  /* ---------- barra de potencia ---------- */
+  function setPower(e) {
+    const r = powerBox.getBoundingClientRect();
+    aim.power = clamp((e.clientX - r.left) / r.width, 0.05, 1);
+  }
+  function onPowerDown(e) {
+    if (phase !== 'aim' || match.turn !== 'P') return;
+    draggingPower = true;
+    powerBox.setPointerCapture?.(e.pointerId);
+    setPower(e);
+  }
+  const onPowerMove = (e) => draggingPower && phase === 'aim' && setPower(e);
+  const onPowerUp = () => (draggingPower = false);
+
+  /* ---------- cinemática de intro ---------- */
+  const introEls = () => ({
+    box: introEl.querySelector('.pi-bubble'),
+    who: introEl.querySelector('.pi-bubble b'),
+    text: introEl.querySelector('.pi-bubble p'),
+    next: introEl.querySelector('.pi-next'),
+    ready: introEl.querySelector('.pi-ready'),
+  });
+
+  function showIntroStep() {
+    const s = poolIntro[introStep];
+    const e = introEls();
+    const last = introStep === poolIntro.length - 1;
+    e.box.dataset.speaker = s.who;
+    introEl.dataset.speaker = s.who;
+    e.who.textContent = s.who === 'V' ? 'Quiz de F. de Transporte' : 'Sofía';
+    e.text.textContent = '';
+    e.next.hidden = true;
+    e.ready.hidden = true;
+    react(e.box, 'pop');
+    clearInterval(introTimer);
+    introTyping = true;
+    let i = 0;
+    const done = () => {
+      clearInterval(introTimer);
+      introTyping = false;
+      e.text.textContent = s.text;
+      if (last) e.ready.hidden = false;
+      else e.next.hidden = false;
+    };
+    introTimer = setInterval(() => {
+      e.text.textContent = s.text.slice(0, ++i);
+      if (i % 3 === 0) sfx.note();
+      if (i >= s.text.length) done();
+    }, 24);
+    introEl._finish = done;
+  }
+
+  function onIntroTap(e) {
+    if (phase !== 'intro' || e.target.closest('.pi-skip, .pi-ready')) return;
+    if (introTyping) return introEl._finish();
+    if (introStep < poolIntro.length - 1) {
+      introStep++;
+      sfx.tap();
+      showIntroStep();
+    }
+  }
+
+  // Los personajes grandes "viajan" hasta su sitio de arriba y se revela la mesa.
+  function endIntro() {
+    if (phase !== 'intro') return;
+    phase = 'intro-out';
+    clearInterval(introTimer);
+    sfx.tap();
+    const fly = (from, to) => {
+      const a = from.getBoundingClientRect();
+      const b = to.getBoundingClientRect();
+      from.style.transformOrigin = '0 0';
+      from.style.transition = 'transform 0.9s cubic-bezier(0.22, 1, 0.36, 1)';
+      from.style.transform = `translate(${b.left - a.left}px, ${b.top - a.top}px) scale(${b.width / a.width}, ${b.height / a.height})`;
+    };
+    fly(introEl.querySelector('.pi-vill canvas'), villEl);
+    fly(introEl.querySelector('.pi-hero canvas'), heroEl);
+    introEl.classList.add('leaving');
+    later(() => {
+      introEl.remove();
+      villEl.style.visibility = '';
+      heroEl.style.visibility = '';
+      phase = 'aim';
+      defaultAim();
+      setControls();
+      say(pick(poolLines.yourTurn));
+    }, 950);
+  }
 
   function onFire() {
     if (match.turn !== 'P' || ended) return;
@@ -581,13 +697,18 @@ export function createPool() {
         urgentObs.observe(timeEl, { attributes: true, attributeFilter: ['class'] });
       }
 
+      powerBox.addEventListener('pointerdown', onPowerDown);
+      powerBox.addEventListener('pointermove', onPowerMove);
+      powerBox.addEventListener('pointerup', onPowerUp);
+      powerBox.addEventListener('pointercancel', onPowerUp);
+      introEl.addEventListener('pointerdown', onIntroTap);
+      introEl.querySelector('.pi-skip').addEventListener('click', endIntro);
+      introEl.querySelector('.pi-ready').addEventListener('click', endIntro);
+
       if (location.search.includes('debug')) window.__poolDebug = { match, endGame };
       defaultAim();
       setControls();
-      say(pick(poolLines.intro));
-      later(() => {
-        if (!ended && phase === 'aim') say(pick(poolLines.yourTurn));
-      }, 4800);
+      showIntroStep();
       last = performance.now();
       raf = requestAnimationFrame(frame);
     },
@@ -596,6 +717,7 @@ export function createPool() {
       cancelAnimationFrame(raf);
       clearInterval(typeTimer);
       clearInterval(fineTimer);
+      clearInterval(introTimer);
       timeouts.forEach(clearTimeout);
       timeouts.clear();
       resizeObs?.disconnect();
