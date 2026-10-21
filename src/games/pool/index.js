@@ -1,3 +1,3 @@
-import { createStub } from '../stub.js';
+import { createPool } from './PoolGame.js';
 
-export default () => createStub('Billar');
+export default createPool;

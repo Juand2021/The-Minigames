@@ -111,7 +111,7 @@ export class GameShell {
     this.game = GAMES[lvl.id]();
     this.game.mount(el.querySelector('#stage'), {
       win: () => this.showResult(i, true),
-      lose: () => this.showResult(i, false),
+      lose: (reason) => this.showResult(i, false, reason),
     });
     this.timer.start();
     el.querySelector('[data-act="quit"]').addEventListener('click', () => {
@@ -119,17 +119,17 @@ export class GameShell {
     });
   }
 
-  showResult(i, won) {
+  showResult(i, won, reason) {
     const lvl = LEVELS[i];
     this.progress.attempts[lvl.id] = (this.progress.attempts[lvl.id] || 0) + 1;
     if (won && this.progress.unlocked === i) this.progress.unlocked = i + 1;
     saveProgress(this.progress);
-    const msg = won ? wins[lvl.id] : loses[Math.floor(Math.random() * loses.length)];
+    const msg = won ? wins[lvl.id] : reason || loses[Math.floor(Math.random() * loses.length)];
     const last = won && i === LEVELS.length - 1;
     const el = this.render(`
       <div class="center">
         <div class="big">${won ? '🎉' : '⏰'}</div>
-        <h2>${won ? '¡Ganaste!' : 'Tiempo agotado'}</h2>
+        <h2>${won ? '¡Ganaste!' : reason ? 'Perdiste' : 'Tiempo agotado'}</h2>
         <p class="bubble">${msg}</p>
         <button class="btn" data-act="next">${won ? (last ? 'Ver premio' : 'Continuar') : 'Reintentar'}</button>
         ${won ? '' : '<button class="btn btn-ghost" data-act="map">Mapa</button>'}

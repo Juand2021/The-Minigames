@@ -45,6 +45,33 @@ export const crosswordToasts = {
   win: '¡Crucigrama completo! Me conoces mejor que nadie 💜',
 };
 
+// Billar: el rival es el Quiz de Fenómenos de Transporte. Cada lista se elige al azar.
+export const poolLines = {
+  intro: [
+    '¡JAJAJA! Soy el Quiz de Fenómenos de Transporte. Si pierdes, ¡me presentas mañana! 📄',
+    'Te reto a un billar. Tú abres… ¡y no me quites el Cuatro Loko de la mesa!',
+  ],
+  yourTurn: ['Rompe el triángulo, genia 🎱', 'Tu turno. Respira y apunta 💜', 'Dale con todo 💪'],
+  assigned: {
+    solid: 'Te tocaron las LISAS (1-7). ¡Mételas todas y al final la 8!',
+    stripe: 'Te tocaron las RAYADAS (9-15). ¡Mételas todas y al final la 8!',
+  },
+  vAssigned: 'Yo me quedo con las otras. ¡Prepárate para la entropía! 📉',
+  pPocket: ['¡NO! ¡Esa me daba la nota! 😱', '¡Mi balance de masa! 😖', 'Suerte de principiante… 😤', '¡Me estás reprobando!'],
+  pMiss: ['¡Jajaja! Esa ni el calor de transferencia la salva 🔥', 'Fallaste. Como en el parcial 😏', 'Casi… pero no 🤭'],
+  pFoul: ['¡FALTA! Como mi promedio de aprobación 😈', 'Eso es falta. Bola en mano pa mí 😎', '¡Falta! Reprobada 📝'],
+  vPocket: ['¡Ecuación resuelta! 😈', 'Eso fue pura mecánica de fluidos 🌊', 'Fácil. Más fácil que el examen… para mí 😏'],
+  vMiss: ['Mmm… ¡fue el viscosímetro! 😤', 'Esa no cuenta. Estaba distraído 😒', '¡La mesa está inclinada! 😠'],
+  vFoul: ['¡¿FALTA?! ¡Eso es injusto! 😡', 'Me equivoqué… ¡por culpa del coeficiente! 😖', 'Uy… bola en mano para ti 😅'],
+  continueP: ['¡Sigues tú! 💜', '¡Buen tiro! Otra vez 🔥', '¡Así se hace! ✨'],
+  eightEarlyP: 'Metiste la 8 antes de tiempo… ¡PERDISTE! 😈',
+  eightEarlyV: '¡NOOO! ¡Metí la 8 sin querer! 😱',
+  win: '¡NOOOO! ¡Me hiciste pedazos! 📄💥 …está bien, aprobaste.',
+  lose: '¡JAJAJA! ¡Ganó el Quiz! ¡Nos vemos en el parcial! 😈',
+  loseReason: 'El Quiz de Fenómenos de Transporte te ganó esta vez. ¡Revancha!',
+  eightEarlyLoseReason: 'Metiste la 8 antes de tiempo. ¡Revancha!',
+};
+
 export const loses = [
   '¡Se acabó el tiempo! Pero no pasa nada, inténtalo otra vez.',
   'El reloj ganó esta ronda. La revancha es gratis.',

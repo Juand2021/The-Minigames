@@ -37,7 +37,9 @@ function tone(freq, { dur = 0.12, type = 'sine', vol = 0.08, delay = 0, slide = 
 }
 
 const buzz = (ms) => {
-  if (!muted && navigator.vibrate) navigator.vibrate(ms);
+  if (muted || !navigator.vibrate) return;
+  if (navigator.userActivation && !navigator.userActivation.hasBeenActive) return;
+  navigator.vibrate(ms);
 };
 
 export const sfx = {
@@ -75,6 +77,22 @@ export const sfx = {
   complete() {
     [523, 659, 784].forEach((f, i) => tone(f, { dur: 0.22, delay: i * 0.06, type: 'triangle' }));
     buzz(20);
+  },
+  // billar
+  click(v) {
+    tone(260 + Math.min(v, 450) * 1.3, { dur: 0.05, type: 'square', vol: Math.min(0.07, 0.008 + v / 9000) });
+  },
+  cushion(v) {
+    tone(130, { dur: 0.09, type: 'triangle', vol: Math.min(0.07, 0.01 + v / 8000), slide: 0.6 });
+  },
+  pocket() {
+    tone(240, { dur: 0.16, type: 'sine', vol: 0.08, slide: 0.45 });
+    tone(150, { dur: 0.22, type: 'triangle', vol: 0.06, delay: 0.1, slide: 0.6 });
+    buzz(15);
+  },
+  shot(p) {
+    tone(80 + p * 70, { dur: 0.09, type: 'square', vol: 0.04 + p * 0.04 });
+    buzz(10);
   },
   win() {
     [523, 659, 784, 1047, 1319].forEach((f, i) =>
