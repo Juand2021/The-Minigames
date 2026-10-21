@@ -1,3 +1,3 @@
-import { createStub } from '../stub.js';
+import { createCraft } from './CraftGame.js';
 
-export default () => createStub('Minecraft 2D');
+export default createCraft;

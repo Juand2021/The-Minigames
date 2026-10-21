@@ -10,7 +10,8 @@
     "crossword": "node scripts/build-crossword.mjs",
     "test:sudoku": "node scripts/test-sudoku.mjs",
     "test:pool": "node scripts/test-pool.mjs",
-    "test:rotation": "node scripts/test-rotation.mjs"
+    "test:rotation": "node scripts/test-rotation.mjs",
+    "test:craft": "node scripts/test-craft.mjs"
   },
   "dependencies": {
     "phaser": "^3.90.0"

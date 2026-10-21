@@ -79,7 +79,7 @@ export class GameShell {
         <div class="big">${lvl.icon}</div>
         <h2>${lvl.name}</h2>
         <p class="bubble">${intros[lvl.id]}</p>
-        <p class="sub">Tiempo: ${formatTime(lvl.seconds)}</p>
+        <p class="sub">Tiempo: ${lvl.seconds == null ? 'sin límite' : formatTime(lvl.seconds)}</p>
         <button class="btn" data-act="go">¡Vamos!</button>
         <button class="btn btn-ghost" data-act="back">Volver</button>
       </div>`);
@@ -100,7 +100,7 @@ export class GameShell {
       </header>
       <section class="stage" id="stage"></section>`);
     const timeEl = el.querySelector('#time');
-    this.timer = new Timer(
+    this.timer = lvl.seconds == null ? null : new Timer(
       lvl.seconds,
       (s) => {
         timeEl.textContent = formatTime(s);
@@ -113,7 +113,7 @@ export class GameShell {
       win: () => this.showResult(i, true),
       lose: (reason) => this.showResult(i, false, reason),
     });
-    this.timer.start();
+    this.timer?.start();
     el.querySelector('[data-act="quit"]').addEventListener('click', () => {
       if (confirm('¿Salir del nivel? El tiempo se reinicia.')) this.showMap();
     });

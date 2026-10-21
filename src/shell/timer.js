@@ -48,4 +48,5 @@ export class Timer {
 }
 
 export const formatTime = (s) =>
+  s == null ? '∞' :
   `${String(Math.floor(s / 60)).padStart(1, '0')}:${String(s % 60).padStart(2, '0')}`;
