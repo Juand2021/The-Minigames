@@ -510,7 +510,7 @@ function outline(c, color = [20, 14, 24]) {
 
 // Retrato de Laura para las cinemáticas: pelo castaño oscuro ondulado con raya al medio,
 // mechones rubios al frente, pecas, lunar sobre el labio, labios rojos, argolla dorada y chaqueta negra con cremallera.
-function lauraPortrait(wink = false) {
+export function lauraPortrait(wink = false) {
   return outline(
     sprite(38, 46, (g) => {
       const hair = '#2b1a13';

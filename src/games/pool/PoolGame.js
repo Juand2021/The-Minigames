@@ -4,6 +4,7 @@ import { step, isMoving, castRay, canPlaceCue, SUBSTEP, VMAX, R, W, H, RAIL, LW,
 import { chooseShot, choosePlacement } from './ai.js';
 import { makeBallSet, makeBallShadow, makeTable, drawVillain, drawPlayer, createBallCanvas, paintBall } from './sprites.js';
 import { rollRot, randomRot } from './rotation.js';
+import { lauraPortrait } from '../craft/engine/textures.js';
 import { poolLines, poolIntro } from '../../content/story.js';
 import { sfx } from '../shared/sfx.js';
 import { burst } from '../shared/confetti.js';
@@ -121,7 +122,14 @@ export function createPool() {
     drawVillain(villEl);
     drawPlayer(heroEl);
     drawVillain(introEl.querySelector('.pi-vill canvas'));
-    drawPlayer(introEl.querySelector('.pi-hero canvas'));
+    // En la cinemática, Laura sale con su retrato detallado (el mismo de Maincra)
+    const portrait = lauraPortrait();
+    const heroCv = introEl.querySelector('.pi-hero canvas');
+    heroCv.width = portrait.width;
+    heroCv.height = portrait.height;
+    heroCv.getContext('2d').drawImage(portrait, 0, 0);
+    heroCv.style.width = `${portrait.width * 4}px`;
+    heroCv.style.height = `${portrait.height * 4}px`;
     villEl.style.visibility = 'hidden';
     heroEl.style.visibility = 'hidden';
     root.querySelectorAll('.tray').forEach((t) => (trayEls[t.dataset.who] = t.querySelector('.slots')));
@@ -664,15 +672,23 @@ export function createPool() {
     phase = 'intro-out';
     clearInterval(introTimer);
     sfx.tap();
-    const fly = (from, to) => {
+    const fly = (from, to, fade = false) => {
       const a = from.getBoundingClientRect();
       const b = to.getBoundingClientRect();
       from.style.transformOrigin = '0 0';
       from.style.transition = 'transform 0.9s cubic-bezier(0.22, 1, 0.36, 1)';
-      from.style.transform = `translate(${b.left - a.left}px, ${b.top - a.top}px) scale(${b.width / a.width}, ${b.height / a.height})`;
+      // escala uniforme centrada en el destino (el retrato no tiene la misma forma que el personaje)
+      const k = Math.min(b.width / a.width, b.height / a.height);
+      const tx = b.left + (b.width - a.width * k) / 2 - a.left;
+      const ty = b.top + (b.height - a.height * k) / 2 - a.top;
+      from.style.transform = `translate(${tx}px, ${ty}px) scale(${k})`;
+      if (fade) {
+        from.style.transition += ', opacity 0.9s ease-in';
+        from.style.opacity = '0';
+      }
     };
     fly(introEl.querySelector('.pi-vill canvas'), villEl);
-    fly(introEl.querySelector('.pi-hero canvas'), heroEl);
+    fly(introEl.querySelector('.pi-hero canvas'), heroEl, true);
     introEl.classList.add('leaving');
     later(() => {
       introEl.remove();
