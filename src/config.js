@@ -4,6 +4,7 @@ export const LEVELS = [
   { id: 'crossword', icon: '✏️', name: 'Crucigrama', tagline: 'Pistas sobre nosotros', seconds: 5 * 60 },
   { id: 'pool', icon: '🎱', name: 'Billar', tagline: 'Duelo contra el Quiz', seconds: 8 * 60 },
   { id: 'craft', icon: '⛏️', name: 'Maincra', tagline: 'Sobrevive y construye', seconds: null }, // sin límite de tiempo (por ahora)
+  { id: 'gym', icon: '🏋️', name: 'Gym', tagline: 'Sentadillas, dominadas y curl', seconds: 3 * 60 },
 ];
 
 // SOLO PRUEBAS: true deja abiertos todos los niveles desde el mapa.

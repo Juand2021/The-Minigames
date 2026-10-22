@@ -8,8 +8,9 @@ import sudoku from '../games/sudoku/index.js';
 import crossword from '../games/crossword/index.js';
 import pool from '../games/pool/index.js';
 import craft from '../games/craft/index.js';
+import gym from '../games/gym/index.js';
 
-const GAMES = { sudoku, crossword, pool, craft };
+const GAMES = { sudoku, crossword, pool, craft, gym };
 // Flecha de volver (SVG para que se vea nítida en cualquier pantalla)
 const BACK = '<svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M15 5l-7 7 7 7"/></svg>';
 const timeLabel = (s) => (s == null ? 'Sin límite' : formatTime(s));
@@ -169,7 +170,7 @@ export class GameShell {
       return `<span class="pip ${st}" title="${l.name}">${st === 'done' ? '✅' : l.icon}</span>`;
     }).join('');
     const label = this.allDone ? 'Ver tu premio 🏆' : done > 0 ? 'Continuar ▸' : `${cover.button} ▸`;
-    const note = done === 0 ? 'Tu aventura está por comenzar' : this.allDone ? '¡Superaste las 4 pruebas! 🎉' : `${done} de ${LEVELS.length} pruebas superadas`;
+    const note = done === 0 ? 'Tu aventura está por comenzar' : this.allDone ? `¡Superaste las ${LEVELS.length} pruebas! 🎉` : `${done} de ${LEVELS.length} pruebas superadas`;
     const el = this.render(
       `
       <div class="cover reveal">
@@ -197,7 +198,7 @@ export class GameShell {
         const yes = await this.confirm({
           icon: '🧹',
           title: '¿Empezar de cero?',
-          text: 'Se borrará el progreso de las 4 pruebas.',
+          text: `Se borrará el progreso de las ${LEVELS.length} pruebas.`,
           ok: 'Sí, reiniciar',
           cancel: 'No, conservarlo',
           danger: true,
@@ -394,7 +395,7 @@ export class GameShell {
       `
       <div class="result win reveal">
         <div class="orb orb-xl">🏆</div>
-        <p class="eyebrow">Las 4 pruebas superadas</p>
+        <p class="eyebrow">Las ${LEVELS.length} pruebas superadas</p>
         <h1 class="display">${reward.title}</h1>
         <p class="glass bubble">${reward.message}</p>
         <p class="glass prize">${reward.detail}</p>

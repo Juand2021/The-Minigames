@@ -2,7 +2,7 @@
 export const cover = {
   eyebrow: 'Hecho con mucho cariño para ti 💜',
   title: 'El Gran Desafío',
-  subtitle: '4 pruebas. 1 premio. 0 excusas.',
+  subtitle: '5 pruebas. 1 premio. 0 excusas.',
   button: 'Empezar',
 };
 
@@ -10,6 +10,7 @@ export const intros = {
   sudoku: 'Prueba 1: Sudoku. Sé que lo tuyo son los números. No me hagas quedar mal.',
   crossword: 'Prueba 2: Crucigrama. Ojo: las pistas hablan de nosotros. Si fallas, es sospechoso.',
   pool: 'Prueba 3: Billar. Aquí no vale culpar a la mesa.',
+  gym: 'Prueba 5: Gym. Tres ejercicios, diez repeticiones cada uno y cero excusas. ¡Esa creatina no se toma sola!',
   craft: 'Prueba 4: Maincra. Sobrevive a la noche, protege los Four Lokos y a Juan… y luego ¡a construir!',
 };
 
@@ -17,6 +18,7 @@ export const wins = {
   sudoku: '¡Sudoku resuelto! Obviamente.',
   crossword: '¡Crucigrama completo! Me conoces demasiado bien.',
   pool: '¡Mesa limpia! Eres peligrosa.',
+  gym: '¡Tres ejercicios completados! Eres una máquina 🏋️💜',
   craft: '¡Noche superada y Maincra construido! Juan está orgulloso 🦫💜',
 };
 
@@ -81,6 +83,15 @@ export const poolLines = {
   lose: '¡JAJAJA! ¡Ganó el Quiz! ¡Nos vemos en el parcial! 😈',
   loseReason: 'El Quiz de Fenómenos de Transporte te ganó esta vez. ¡Revancha!',
   eightEarlyLoseReason: 'Metiste la 8 antes de tiempo. ¡Revancha!',
+};
+
+// Gym: textos cortos durante los tres ejercicios.
+export const gymLines = {
+  go: ['¡Sentadillas! Toca, toca, toca 🍑', '¡A la barra! Desliza arriba y abajo 🧗', '¡Mancuernas! Alterna izquierda y derecha 💪'],
+  beast: ['¡MODO BESTIA! 🔥', '¡Así, fiera! 💥', '¡Creatina activada! ⚡'],
+  rep: ['¡Eso, Gym Rat! 💪', '¡Cacorra estaría orgullosa! 😎', '¡Ni el Four Loko te frena! 🥤', '¡Qué fuerza, mamacita! 🔥'],
+  alternate: 'Alterna: ahora el otro brazo 😉',
+  exerciseDone: ['¡Sentadillas listas! 🍑', '¡Dominadas listas! 🧗', '¡Curl listo! 💪'],
 };
 
 export const loses = [
