@@ -7,7 +7,7 @@ export const maincraIntro = [
   { who: 'juan', text: '…*mastica pasto con su mandarina en la cabeza* 🍊🦫' },
   { who: 'zombie', text: 'Grrr… Fooour… Lookooos… 🧟' },
   { who: 'creeper', text: 'Ssssssss… 💚' },
-  { who: 'sofia', scene: 'lauraWink', text: '¡Ni lo sueñen! Juan, detrás de mí. Voy a defender ese cofre.' },
+  { who: 'sofia', text: '¡Ni lo sueñen! Juan, detrás de mí. Voy a defender ese cofre.' },
   { who: 'sofia', text: 'Tengo unos segundos antes de que oscurezca: muros, antorchas… ¡lo que sea!' },
 ];
 export const maincraIntroButton = '¡A defender el cofre! ⚔️';

@@ -573,44 +573,53 @@ function lauraPortrait(wink = false) {
         px(g, rx, y, 3, 1, y % 4 === 2 ? blondSh : blond);
       }
 
-      // cejas gruesas
-      px(g, 12, 15, 5, 1, hair);
-      px(g, 13, 14, 3, 1, hair);
-      px(g, 21, 15, 5, 1, hair);
-      px(g, 22, 14, 3, 1, hair);
+      // cejas gruesas con un arco suave
+      px(g, 12, 14, 5, 1, hair);
+      px(g, 11, 15, 1, 1, hair);
+      px(g, 21, 14, 5, 1, hair);
+      px(g, 26, 15, 1, 1, hair);
 
-      // ojos cafés con pestañas (uno guiñado si wink)
-      const eye = (ex) => {
+      // ojos grandes cafés con pestañas y brillo (abiertos los dos)
+      const eye = (ex, outer) => {
         px(g, ex, 17, 4, 3, '#ffffff');
-        px(g, ex + 1, 17, 2, 3, '#4a2a1a');
-        px(g, ex + 1, 18, 2, 2, '#1c0f08');
-        px(g, ex + 1, 17, 1, 1, '#ffffff');
-        px(g, ex - 1, 16, 6, 1, '#120c0a'); // pestañas
+        px(g, ex + 1, 17, 2, 3, '#5a3220'); // iris
+        px(g, ex + 1, 18, 2, 2, '#1c0f08'); // pupila
+        px(g, ex + 1, 17, 1, 1, '#ffffff'); // brillo
+        px(g, ex, 16, 4, 1, '#120c0a'); // pestañas arriba
+        px(g, outer, 16, 1, 1, '#120c0a'); // pestaña hacia fuera
+        px(g, outer, 15, 1, 1, '#120c0a');
+        px(g, ex + 1, 20, 2, 1, skinSh); // sombra bajo el ojo
       };
-      eye(12);
+      eye(12, 11);
+      eye(22, 26);
       if (wink) {
-        px(g, 21, 18, 4, 1, '#120c0a');
-        px(g, 20, 17, 1, 1, '#120c0a');
-        px(g, 25, 17, 1, 1, '#120c0a');
-      } else eye(21);
+        // guiño: el ojo derecho cerrado en curva
+        px(g, 22, 17, 4, 3, skin);
+        px(g, 22, 18, 4, 1, '#120c0a');
+        px(g, 21, 17, 1, 1, '#120c0a');
+        px(g, 26, 17, 1, 1, '#120c0a');
+      }
 
-      // pecas, nariz y rubor
-      for (const [x, y] of [[13, 22], [15, 23], [14, 21], [22, 23], [24, 22], [23, 21], [18, 21], [20, 22]]) px(g, x, y, 1, 1, freckle);
-      px(g, 19, 20, 1, 3, skinSh);
-      px(g, 18, 24, 3, 1, skinSh);
-      px(g, 12, 24, 2, 1, '#eba5a0');
-      px(g, 24, 24, 2, 1, '#eba5a0');
+      // nariz fina: luz arriba, sombra a un lado y fosas suaves
+      px(g, 19, 19, 1, 3, '#fbe2cc');
+      px(g, 20, 19, 1, 4, skinSh);
+      px(g, 18, 23, 1, 1, '#c98e7c');
+      px(g, 20, 23, 1, 1, '#c98e7c');
+      px(g, 19, 23, 1, 1, skinSh);
+
+      // pocas pecas y rubor
+      for (const [x, y] of [[13, 22], [15, 21], [23, 21], [25, 22], [14, 23], [24, 23]]) px(g, x, y, 1, 1, '#d9a083');
+      px(g, 12, 22, 2, 1, '#f0a9a6');
+      px(g, 25, 22, 2, 1, '#f0a9a6');
 
       // lunar sobre el labio
-      px(g, 15, 25, 1, 1, '#4a2a1e');
+      px(g, 16, 24, 1, 1, '#4a2a1e');
 
-      // labios rojos con sonrisa
-      px(g, 16, 26, 6, 1, '#a52a33');
-      px(g, 15, 27, 8, 1, '#c8343f');
-      px(g, 16, 28, 6, 1, '#d84a55');
-      px(g, 17, 28, 2, 1, '#ef7a82');
-      px(g, 14, 26, 1, 1, '#a52a33');
-      px(g, 23, 26, 1, 1, '#a52a33');
+      // boca pequeña con labios rojos
+      px(g, 17, 25, 5, 1, '#b0303a');
+      px(g, 19, 25, 1, 1, '#c8434c'); // arco de cupido
+      px(g, 17, 26, 5, 1, '#d84a55');
+      px(g, 18, 26, 2, 1, '#ef8088'); // brillo
 
       // argolla dorada
       for (const [x, y] of [[9, 25], [10, 24], [11, 25], [8, 26], [8, 27], [12, 26], [8, 28], [12, 27], [9, 29], [11, 29], [10, 30], [12, 28]]) px(g, x, y, 1, 1, '#e6b84a');
