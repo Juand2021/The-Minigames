@@ -7,14 +7,15 @@ import { drawBody, drawFront, drawHurt, headSprite, outlineLayer, barbell, dumbb
 import { makeScene, LW, LH, FLOOR_Y, CX } from './scene.js';
 
 const REPS = 10;
-const TAPS_PER_SQUAT = 6; // toques por sentadilla (la mitad baja y la otra mitad sube)
-const SWIPE_RANGE = 105; // píxeles de pantalla para una dominada completa
+const TAPS_PER_SQUAT = 12; // toques por sentadilla (la mitad baja y la otra mitad sube)
+const TAPS_PER_CURL = 2; // toques por brazo para levantar la mancuerna
+const SWIPE_RANGE = 150; // píxeles de pantalla para una dominada completa
 const CURL_MS = 320;
 
 // Dificultad: la energía baja sola; si llega a cero, Laura se lesiona y pierde una vida.
 const LIVES = 3;
-const DRAIN = { squat: 0.31, pullup: 0.24, curl: 0.31 }; // energía que pierde por segundo al empezar (+40 %)
-const DRAIN_PER_REP = 0.031; // y cada repetición la hace un poco más difícil
+const DRAIN = { squat: 0.4, pullup: 0.31, curl: 0.4 }; // energía que pierde por segundo al empezar (+30 % sobre la versión anterior)
+const DRAIN_PER_REP = 0.04; // y cada repetición la hace un poco más difícil
 const GAIN = { squat: 0.14, curl: 0.16, pullup: 0.55 }; // energía por toque (en dominadas, por recorrido completo del dedo)
 const START_ENERGY = 1;
 const RECOVER_ENERGY = 0.8;
@@ -29,7 +30,7 @@ const lerp = (a, b, t) => a + (b - a) * t;
 const EXERCISES = [
   { id: 'squat', icon: 'barbell', title: 'Sentadillas', card: 'Toca el botón lo más rápido que puedas. ¡10 sentadillas y cada vez con más peso! Si te frenas, se te cae la barra encima.' },
   { id: 'pullup', icon: 'pullbar', title: 'Dominadas en barra', card: 'Desliza el dedo hacia ARRIBA para subir el mentón por encima de la barra y hacia ABAJO para bajar. ¡10 veces! Si te cansas, te caes de la barra.' },
-  { id: 'curl', icon: 'curl', title: 'Curl con mancuernas', card: 'Toca IZQ y DER alternando para subir y bajar cada mancuerna. ¡10 repeticiones! Si te frenas, una mancuerna se te cae en el pie.' },
+  { id: 'curl', icon: 'curl', title: 'Curl con mancuernas', card: 'Cada brazo necesita 2 toques para subir y bajar la mancuerna. Toca IZQ y DER lo más rápido que puedas: ¡10 repeticiones con los dos brazos! Si te frenas, una mancuerna se te cae en el pie.' },
 ];
 
 export function createGym() {
@@ -59,7 +60,7 @@ export function createGym() {
   const squat = { p: 0, t: 0 };
   const pull = { target: 0, t: 0, up: false, dragging: false, y: 0 };
   // brazo en movimiento = { t0 } (hora de inicio); null = quieto. Todo va por reloj real, no por cuadros.
-  const curl = { L: null, R: null, doneL: false, doneR: false, lastArm: null };
+  const curl = { L: null, R: null, doneL: false, doneR: false, taps: { L: 0, R: 0 }, nudge: { L: 0, R: 0 } };
 
   const later = (fn, ms) => {
     const id = setTimeout(() => {
@@ -287,7 +288,8 @@ export function createGym() {
     curl.L = null;
     curl.R = null;
     curl.doneL = curl.doneR = false;
-    curl.lastArm = null;
+    curl.taps = { L: 0, R: 0 };
+    curl.nudge = { L: 0, R: 0 };
     taps = [];
     beast = false;
   }
@@ -377,13 +379,13 @@ export function createGym() {
         if (now - curl[arm].t0 < CURL_MS * 0.5) return;
         completeArm(arm);
       }
-      if (curl.lastArm === arm) {
-        toast(gymLines.alternate);
-        sfx.error();
-        return;
-      }
-      curl.lastArm = arm;
-      curl[arm] = { t0: now };
+      // cada brazo necesita TAPS_PER_CURL toques: el primero solo "tensa" el brazo, el último lo levanta
+      curl.taps[arm]++;
+      if (curl.taps[arm] >= TAPS_PER_CURL) {
+        curl.taps[arm] = 0;
+        curl.nudge[arm] = 0;
+        curl[arm] = { t0: now };
+      } else curl.nudge[arm] = now;
       registerTap();
       addEnergy(GAIN.curl);
       sfx.place();
@@ -482,8 +484,10 @@ export function createGym() {
       return { elbow, hand: [elbow[0] + dir[0] * 13, elbow[1] + dir[1] * 13] };
     };
     const live = (a) => (a ? Math.sin(Math.PI * clamp((now - a.t0) / CURL_MS, 0, 1)) * 2.65 : 0);
-    let phiL = live(curl.L);
-    let phiR = live(curl.R);
+    // el primer toque solo tensa el brazo un poco (se nota que va a subir, pero aún no sube)
+    const tense = (t) => (t ? Math.sin(Math.PI * clamp((now - t) / 220, 0, 1)) * 0.45 : 0);
+    let phiL = curl.L ? live(curl.L) : tense(curl.nudge.L);
+    let phiR = curl.R ? live(curl.R) : tense(curl.nudge.R);
     const feet = [[CX - 8, FLOOR_Y - 5], [CX + 8, FLOOR_Y - 5]];
     let dropped = null; // mancuerna que se cae
     let rest = null; // mancuerna ya en el suelo
