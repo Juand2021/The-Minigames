@@ -281,7 +281,7 @@ export function drawVillain(cv, mood = 'idle') {
   rect(g, 31, 12, 1, 2, '#d6d0c4');
 }
 
-/* ---------- jugadora (Sofía) ---------- */
+/* ---------- jugadora (Laura) ---------- */
 export function drawPlayer(cv) {
   cv.width = 26;
   cv.height = 42;
@@ -289,41 +289,57 @@ export function drawPlayer(cv) {
   g.imageSmoothingEnabled = false;
   g.clearRect(0, 0, 26, 42);
   const K = '#1b1022';
-  const hair = '#3d2418';
+  const hair = '#2b1a13'; // castaño oscuro
+  const blond = '#ecc47c'; // mechones rubios al frente
+  const skin = '#f3cfb2';
   // taco
   rect(g, 22, 2, 2, 2, '#4fa3ff');
   rect(g, 22, 4, 2, 2, '#f4f4f4');
   rect(g, 22, 6, 2, 22, '#d9a35f');
   rect(g, 22, 28, 2, 12, '#5a321b');
   // piernas
-  rect(g, 8, 29, 4, 8, '#2d3a6b');
-  rect(g, 13, 29, 4, 8, '#2d3a6b');
+  rect(g, 8, 29, 4, 8, '#6f8fc8');
+  rect(g, 13, 29, 4, 8, '#5f7fb8');
   rect(g, 7, 37, 6, 4, K);
   rect(g, 8, 38, 4, 2, '#f2f2f2');
   rect(g, 13, 37, 6, 4, K);
   rect(g, 14, 38, 4, 2, '#f2f2f2');
-  // sudadera morada
+  // chaqueta negra con cremallera
   rect(g, 5, 15, 16, 15, K);
-  rect(g, 6, 16, 14, 13, '#8a55e0');
-  rect(g, 6, 26, 14, 3, '#7442c4');
-  rect(g, 11, 20, 4, 4, '#a678ee');
+  rect(g, 6, 16, 14, 13, '#1b1b21');
+  for (let y = 17; y < 29; y += 2) rect(g, 6, y, 14, 1, '#26262e');
+  rect(g, 12, 16, 1, 13, '#cfcfcf');
+  rect(g, 11, 20, 3, 2, '#e8e8e8');
   // brazo con taco
   rect(g, 19, 17, 5, 8, K);
-  rect(g, 20, 18, 3, 6, '#8a55e0');
-  rect(g, 21, 22, 3, 3, '#f1c9a5');
+  rect(g, 20, 18, 3, 6, '#1b1b21');
+  rect(g, 21, 22, 3, 3, skin);
   // cabeza y pelo largo
   rect(g, 5, 2, 16, 16, K);
   rect(g, 6, 3, 14, 15, hair);
-  rect(g, 8, 6, 10, 9, '#f1c9a5');
-  rect(g, 8, 6, 10, 2, hair);
+  rect(g, 8, 6, 10, 9, skin);
+  rect(g, 8, 6, 10, 1, hair);
+  rect(g, 12, 6, 2, 1, '#8a5a40'); // raya al medio
+  rect(g, 9, 9, 3, 1, hair); // cejas
+  rect(g, 14, 9, 3, 1, hair);
   rect(g, 10, 10, 2, 2, K);
   rect(g, 15, 10, 2, 2, K);
-  rect(g, 11, 13, 4, 1, '#c4524f');
-  rect(g, 8, 12, 2, 1, '#f09aa0');
-  rect(g, 16, 12, 2, 1, '#f09aa0');
-  // pelo cayendo a los lados
-  rect(g, 6, 15, 3, 8, hair);
-  rect(g, 18, 15, 2, 6, hair);
+  rect(g, 10, 10, 1, 1, '#ffffff');
+  rect(g, 15, 10, 1, 1, '#ffffff');
+  rect(g, 9, 13, 1, 1, '#c98a6a'); // pecas
+  rect(g, 16, 13, 1, 1, '#c98a6a');
+  rect(g, 11, 14, 4, 1, '#c8343f'); // labios rojos
+  rect(g, 10, 13, 1, 1, '#4a2a1e'); // lunar
+  // mechones rubios enmarcando la cara
+  rect(g, 7, 6, 2, 11, blond);
+  rect(g, 17, 6, 2, 11, blond);
+  rect(g, 7, 9, 1, 1, '#c79a55');
+  rect(g, 18, 12, 1, 1, '#c79a55');
+  // melena ondulada a los lados
+  rect(g, 5, 15, 3, 9, hair);
+  rect(g, 19, 15, 2, 8, hair);
+  rect(g, 4, 18, 1, 4, hair);
+  rect(g, 6, 16, 1, 1, '#e6b84a'); // argolla
 }
 
 /* ---------- mini bola para las bandejas (DOM) ---------- */

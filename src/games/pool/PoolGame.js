@@ -72,7 +72,7 @@ export function createPool() {
       <div class="pl-top">
         <canvas class="pl-vill" aria-label="El Quiz de Fenómenos de Transporte"></canvas>
         <div class="pl-bubble"><b>Quiz de F. de Transporte</b><p></p></div>
-        <canvas class="pl-hero" aria-label="Sofía"></canvas>
+        <canvas class="pl-hero" aria-label="Laura"></canvas>
       </div>
       <div class="pl-trays">
         <div class="tray" data-who="V"><span class="tray-name">😈 Quiz</span><div class="slots"></div></div>
@@ -625,7 +625,7 @@ export function createPool() {
     const last = introStep === poolIntro.length - 1;
     e.box.dataset.speaker = s.who;
     introEl.dataset.speaker = s.who;
-    e.who.textContent = s.who === 'V' ? 'Quiz de F. de Transporte' : 'Sofía';
+    e.who.textContent = s.who === 'V' ? 'Quiz de F. de Transporte' : 'Laura';
     e.text.textContent = '';
     e.next.hidden = true;
     e.ready.hidden = true;

@@ -20,8 +20,8 @@ import {
   buildFinal,
 } from '../../content/maincra.js';
 
-const NAMES = { sofia: 'Sofía', juan: 'Juan', zombie: 'Zombi', creeper: 'Creeper' };
-const PORTRAIT = { sofia: 'sofiaPortrait', juan: 'juanPortrait', zombie: 'zombie0', creeper: 'creeper0' };
+const NAMES = { sofia: 'Laura', juan: 'Juan', zombie: 'Zombi', creeper: 'Creeper' };
+const PORTRAIT = { sofia: 'lauraPortrait', juan: 'juanPortrait', zombie: 'zombie0', creeper: 'creeper0' };
 const STEP = 1 / 60;
 
 // Captura el dedo sobre el elemento; algunos navegadores lanzan error con punteros ya liberados.

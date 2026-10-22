@@ -7,7 +7,7 @@ export const maincraIntro = [
   { who: 'juan', text: '…*mastica pasto con su mandarina en la cabeza* 🍊🦫' },
   { who: 'zombie', text: 'Grrr… Fooour… Lookooos… 🧟' },
   { who: 'creeper', text: 'Ssssssss… 💚' },
-  { who: 'sofia', text: '¡Ni lo sueñen! Juan, detrás de mí. Voy a defender ese cofre.' },
+  { who: 'sofia', scene: 'lauraWink', text: '¡Ni lo sueñen! Juan, detrás de mí. Voy a defender ese cofre.' },
   { who: 'sofia', text: 'Tengo unos segundos antes de que oscurezca: muros, antorchas… ¡lo que sea!' },
 ];
 export const maincraIntroButton = '¡A defender el cofre! ⚔️';
@@ -46,7 +46,7 @@ export const survivalLose = {
 // Antes de cada construcción
 export const buildIntros = {
   house: [
-    { who: 'juan', text: '*mira a Sofía con ojitos* … Juan necesita una casita 🦫🏠' },
+    { who: 'juan', text: '*mira a Laura con ojitos* … Juan necesita una casita 🦫🏠' },
     { who: 'sofia', text: 'Una casa clásica: base de roca, columnas de tronco, tablones, ventanas de vidrio y puerta.' },
   ],
   bridge: [

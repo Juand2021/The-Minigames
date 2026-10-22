@@ -380,10 +380,13 @@ export class Renderer {
       // el botín va encima de la cabeza, con borde claro para que se vea sobre cualquier fondo
       const c = this.sprites[e.carry];
       const glow = this.sprite(e.carry, 'glow');
-      const cx = Math.round(dx + sw / 2 - c.width / 2);
-      const cy = dy - c.height + 1 + Math.round(Math.sin(this.time * 8));
-      for (const [ox, oy] of [[-1, 0], [1, 0], [0, -1], [0, 1]]) g.drawImage(glow, cx + ox, cy + oy);
-      g.drawImage(c, cx, cy);
+      const k = 0.8; // un poco más pequeña que su tamaño real
+      const cw = Math.round(c.width * k);
+      const ch = Math.round(c.height * k);
+      const cx = Math.round(dx + sw / 2 - cw / 2);
+      const cy = dy - ch + 2 + Math.round(Math.sin(this.time * 8));
+      for (const [ox, oy] of [[-1, 0], [1, 0], [0, -1], [0, 1]]) g.drawImage(glow, cx + ox, cy + oy, cw, ch);
+      g.drawImage(c, cx, cy, cw, ch);
     }
     if (e.hpBar !== undefined && e.hpBar < 1) {
       g.fillStyle = 'rgba(0,0,0,0.6)';

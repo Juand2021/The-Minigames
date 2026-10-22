@@ -224,12 +224,16 @@ function humanoid(g, c, pose) {
   px(g, o + 1, 8, 7, 12, c.shirt);
   px(g, o + 1, 17, 7, 3, shadeHex(c.shirt, 0.85));
   if (c.detail) px(g, o + 3, 12, 3, 3, c.detail);
+  if (c.zip) px(g, o + 5, 8, 1, 12, c.zip);
   // cabeza
   px(g, o, 0, 9, 8, c.skin);
   if (c.hair) {
     px(g, o, 0, 9, 2, c.hair);
     px(g, o, 0, 3, 8, c.hair);
-    if (c.longHair) px(g, o - 1, 2, 3, 13, c.hair);
+    if (c.longHair) {
+      // melena ondulada que cae por la espalda
+      for (let y = 2; y < 16; y++) px(g, o - 1 - (y % 4 === 1 ? 1 : 0), y, 3, 1, c.hair);
+    }
     if (c.bangs) {
       // mechones rubios al frente de la cara
       px(g, o + 8, 1, 1, 6, c.bangs);
@@ -240,8 +244,9 @@ function humanoid(g, c, pose) {
   else {
     px(g, o + 6, 3, 2, 1, '#ffffff');
     px(g, o + 7, 3, 1, 1, c.eye || '#2b1b10');
-    px(g, o + 6, 6, 2, 1, shadeHex(c.skin, 0.75));
+    px(g, o + 6, 6, 2, 1, c.lips || shadeHex(c.skin, 0.75));
   }
+  if (c.earring) px(g, o + 3, 6, 1, 2, c.earring);
   // brazo (con golpe)
   if (c.zombieArms) {
     px(g, o + 4, 9, 11, 3, c.skin);
@@ -298,15 +303,18 @@ function shadeHex(c, k) {
   return `rgb(${Math.round(r * k)},${Math.round(gg * k)},${Math.round(b * k)})`;
 }
 
+// Laura: pelo castaño oscuro largo y ondulado, mechones rubios al frente, chaqueta negra con cremallera y jeans claros
 const SOFIA = {
-  skin: '#f1c9a5',
-  hair: '#17131c', // pelo negro
-  bangs: '#f2d16b', // mechones rubios al frente
+  skin: '#f3cfb2',
+  hair: '#2b1a13',
+  bangs: '#ecc47c',
   longHair: true,
   holdSword: true,
-  shirt: '#8a55e0',
-  detail: '#a678ee',
-  pants: '#2d3a6b',
+  shirt: '#1b1b21',
+  zip: '#cfcfcf',
+  earring: '#e6b84a',
+  lips: '#c8343f',
+  pants: '#6f8fc8',
   shoes: '#f2f2f2',
 };
 const ZOMBIE = {
@@ -417,15 +425,50 @@ export function makeCharacterSprites() {
   s.juan2 = juan(2);
 
   // Lata de Four Loko (camuflaje de colores)
-  s.loko = sprite(7, 11, (g) => {
-    px(g, 0, 1, 7, 10, '#1b1b1b');
-    px(g, 1, 0, 5, 1, '#c9c9c9');
-    px(g, 1, 10, 5, 1, '#9a9a9a');
-    const cam = ['#e8452e', '#f6c43b', '#2f7de1', '#5cc46a'];
-    for (let y = 2; y < 10; y++) for (let x = 1; x < 6; x++) px(g, x, y, 1, 1, cam[(x * 3 + y * 5) % 4]);
-    px(g, 2, 4, 3, 2, '#111');
-    px(g, 2, 4, 1, 1, '#fff');
-  });
+  // Lata de Four Loko de sandía: camuflaje verde con rosa, letras blancas "FOUR", mancha negra y bordes plateados
+  s.loko = outline(
+    sprite(11, 22, (g) => {
+      const CAMO = [
+        'DGGLLLGBD',
+        'DGLLLGBBD',
+        'DPPLGGGBD',
+        'DPPPGGLLD',
+        'DGPGGLLLD',
+        'DGGGLLLGD',
+        'DLLGGGPPD',
+        'DLLGGPPPD',
+        'DGLGGPPGD',
+        'DGGLLGGGD',
+        'DPGLLLGGD',
+        'DPPGLLGGD',
+        'DGPGGLPPD',
+        'DGGLLLPPD',
+        'DLLGGGGGD',
+        'DLGGPPGDD',
+      ];
+      // F-O-U-R giradas 90° (R arriba, F abajo), separadas por una fila de camuflaje
+      const FOUR = ['...', '.##', '##.', '###', '...', '###', '..#', '###', '...', '###', '#.#', '###', '...', '#..', '##.', '###'];
+      const LOKO = ['..sSSSs..', '.kSSSSSk.'];
+      CAMO.forEach((row, i) => {
+        const r = [...row];
+        [...FOUR[i]].forEach((ch, j) => {
+          if (ch !== '#') return;
+          r[2 + j] = 'W';
+          if (FOUR[i][j + 1] !== '#') r[3 + j] = 'd'; // sombra de la letra
+        });
+        if (i >= 5 && i <= 12) r[i % 2 ? 6 : 7] = 'B'; // garabato negro de 'Loko'
+        LOKO.push(r.join(''));
+      });
+      LOKO.push('.ksssssk.', '..kkkkk..');
+      const C = {
+        S: '#ececec', s: '#b9b9b9', k: '#7c7c7c',
+        D: '#1d5a2a', G: '#3c9a3a', L: '#86d84f', P: '#e23a6d', p: '#a81f4a',
+        W: '#ffffff', B: '#141414', d: '#123d1e',
+      };
+      LOKO.forEach((row, y) => [...row].forEach((ch, x) => ch !== '.' && px(g, x + 1, y + 1, 1, 1, C[ch])));
+    }),
+    [10, 30, 14],
+  );
 
   s.xp = sprite(5, 5, (g) => {
     px(g, 1, 0, 3, 5, '#a8ff3d');
@@ -435,7 +478,8 @@ export function makeCharacterSprites() {
   });
 
   // Solo para las cinemáticas: versiones con más detalle
-  s.sofiaPortrait = sofiaPortrait();
+  s.lauraPortrait = lauraPortrait();
+  s.lauraWink = lauraPortrait(true);
   s.juanPortrait = juanPortrait();
   s.chestScene = chestScene(s.loko);
   return s;
@@ -464,62 +508,112 @@ function outline(c, color = [20, 14, 24]) {
   return c;
 }
 
-function sofiaPortrait() {
+// Retrato de Laura para las cinemáticas: pelo castaño oscuro ondulado con raya al medio,
+// mechones rubios al frente, pecas, lunar sobre el labio, labios rojos, argolla dorada y chaqueta negra con cremallera.
+function lauraPortrait(wink = false) {
   return outline(
-    sprite(32, 40, (g) => {
-      const hair = '#17131c';
-      const hairHi = '#3b3448';
-      const blond = '#f2d16b';
-      const blondSh = '#c9a443';
-      const skin = '#f3cfae';
-      const skinSh = '#e2b08f';
-      // pelo largo por detrás
-      ellipse(g, 16, 14, 12, 12.5, hair);
-      px(g, 4, 14, 24, 22, hair);
-      px(g, 7, 6, 2, 3, hairHi);
-      px(g, 21, 5, 3, 2, hairHi);
-      // sudadera morada
-      ellipse(g, 16, 39, 14, 8, '#8a55e0');
-      px(g, 4, 34, 24, 6, '#8a55e0');
-      px(g, 4, 36, 3, 4, '#6b3fc4');
-      px(g, 25, 36, 3, 4, '#6b3fc4');
-      px(g, 10, 31, 12, 3, '#a678ee'); // capucha
-      px(g, 13, 33, 1, 5, '#f2f2f2'); // cordones
-      px(g, 18, 33, 1, 5, '#f2f2f2');
+    sprite(38, 46, (g) => {
+      const hair = '#2b1a13';
+      const hairMid = '#3f2719';
+      const hairHi = '#6a4630';
+      const blond = '#ecc47c';
+      const blondSh = '#c79a55';
+      const skin = '#f3cfb2';
+      const skinSh = '#e0ae90';
+      const freckle = '#c98a6a';
+      const jacket = '#17171c';
+      const jacketHi = '#26262e';
+
+      // melena larga y ondulada por detrás
+      ellipse(g, 19, 16, 14.5, 14, hair);
+      for (let y = 14; y < 46; y++) {
+        const w = Math.round(Math.sin(y * 0.5) * 1.3);
+        px(g, 3 + w, y, 10, 1, hair);
+        px(g, 25 - w, y, 10, 1, hair);
+      }
+      // reflejos del pelo (ondas)
+      const r = rng(31);
+      for (let i = 0; i < 46; i++) {
+        const side = i % 2;
+        const y = 12 + Math.floor(r() * 32);
+        const x = side ? 26 + Math.floor(r() * 7) : 4 + Math.floor(r() * 7);
+        px(g, x, y, 1, 2, r() < 0.5 ? hairMid : hairHi);
+      }
+
+      // chaqueta negra acanalada con cremallera
+      ellipse(g, 19, 48, 17, 10, jacket);
+      px(g, 3, 39, 32, 7, jacket);
+      for (let y = 38; y < 46; y += 2) px(g, 5, y, 28, 1, jacketHi);
+      px(g, 13, 34, 12, 4, jacket); // cuello alto
+      px(g, 13, 35, 12, 1, jacketHi);
+      px(g, 19, 35, 1, 11, '#cfcfcf'); // cremallera
+      px(g, 18, 39, 3, 1, '#e8e8e8');
+      px(g, 18, 41, 3, 1, '#e8e8e8');
+      px(g, 18, 40, 1, 1, '#e8e8e8');
+      px(g, 20, 40, 1, 1, '#e8e8e8'); // argolla del cierre
+
       // cuello y cara
-      px(g, 13, 26, 6, 6, skinSh);
-      ellipse(g, 16, 18, 7.5, 9, skin);
-      px(g, 21, 13, 2, 11, skinSh);
-      // flequillo negro con raya al lado
-      ellipse(g, 16, 9, 9, 5, hair);
-      px(g, 9, 9, 4, 3, hair);
-      px(g, 19, 9, 5, 2, hair);
-      // mechones rubios al frente, enmarcando la cara
-      for (let y = 9; y < 31; y++) {
-        const drift = y > 22 ? 1 : 0; // caen rectos y se abren un poco al final
-        px(g, 8 - drift, y, 2, 1, y % 5 === 0 ? blondSh : blond);
-        px(g, 22 + drift, y, 2, 1, y % 5 === 2 ? blondSh : blond);
+      px(g, 16, 30, 6, 4, skinSh);
+      ellipse(g, 19, 19.5, 8.2, 10.5, skin);
+      px(g, 25, 15, 2, 11, skinSh); // sombra lateral
+      px(g, 17, 29, 4, 1, skinSh); // mentón
+
+      // pelo de arriba con raya al medio
+      ellipse(g, 19, 9.5, 10.5, 5.5, hair);
+      px(g, 10, 9, 4, 5, hair);
+      px(g, 24, 9, 4, 5, hair);
+      px(g, 19, 5, 1, 4, '#8a5a40'); // raya
+
+      // mechones rubios que salen de la raya y enmarcan la cara (ondulados)
+      for (let y = 6; y < 35; y++) {
+        const w = y < 14 ? 0 : Math.round(Math.sin(y * 0.55) * 1.2);
+        const lx = (y < 11 ? 16 - (y - 6) : 11) + w;
+        const rx = (y < 11 ? 21 + (y - 6) : 26) - w;
+        px(g, lx, y, 3, 1, y % 4 === 0 ? blondSh : blond);
+        px(g, rx, y, 3, 1, y % 4 === 2 ? blondSh : blond);
       }
-      px(g, 10, 8, 2, 1, blond);
-      px(g, 20, 8, 2, 1, blond);
-      // cejas y ojos
-      px(g, 10, 14, 4, 1, '#17131c');
-      px(g, 18, 14, 4, 1, '#17131c');
-      for (const ex of [10, 18]) {
-        px(g, ex, 16, 4, 3, '#ffffff');
-        px(g, ex + 1, 16, 2, 3, '#4a2a1a');
-        px(g, ex + 1, 17, 2, 2, '#1b0f0a');
-        px(g, ex + 1, 16, 1, 1, '#ffffff');
-        px(g, ex, 15, 4, 1, '#17131c'); // pestañas
-      }
-      // rubor, nariz y sonrisa
-      px(g, 9, 20, 3, 1, '#f29aa6');
-      px(g, 20, 20, 3, 1, '#f29aa6');
-      px(g, 15, 20, 2, 1, skinSh);
-      px(g, 13, 23, 6, 1, '#b5484f');
-      px(g, 12, 22, 1, 1, '#b5484f');
-      px(g, 19, 22, 1, 1, '#b5484f');
-      px(g, 14, 24, 4, 1, '#e98a8f');
+
+      // cejas gruesas
+      px(g, 12, 15, 5, 1, hair);
+      px(g, 13, 14, 3, 1, hair);
+      px(g, 21, 15, 5, 1, hair);
+      px(g, 22, 14, 3, 1, hair);
+
+      // ojos cafés con pestañas (uno guiñado si wink)
+      const eye = (ex) => {
+        px(g, ex, 17, 4, 3, '#ffffff');
+        px(g, ex + 1, 17, 2, 3, '#4a2a1a');
+        px(g, ex + 1, 18, 2, 2, '#1c0f08');
+        px(g, ex + 1, 17, 1, 1, '#ffffff');
+        px(g, ex - 1, 16, 6, 1, '#120c0a'); // pestañas
+      };
+      eye(12);
+      if (wink) {
+        px(g, 21, 18, 4, 1, '#120c0a');
+        px(g, 20, 17, 1, 1, '#120c0a');
+        px(g, 25, 17, 1, 1, '#120c0a');
+      } else eye(21);
+
+      // pecas, nariz y rubor
+      for (const [x, y] of [[13, 22], [15, 23], [14, 21], [22, 23], [24, 22], [23, 21], [18, 21], [20, 22]]) px(g, x, y, 1, 1, freckle);
+      px(g, 19, 20, 1, 3, skinSh);
+      px(g, 18, 24, 3, 1, skinSh);
+      px(g, 12, 24, 2, 1, '#eba5a0');
+      px(g, 24, 24, 2, 1, '#eba5a0');
+
+      // lunar sobre el labio
+      px(g, 15, 25, 1, 1, '#4a2a1e');
+
+      // labios rojos con sonrisa
+      px(g, 16, 26, 6, 1, '#a52a33');
+      px(g, 15, 27, 8, 1, '#c8343f');
+      px(g, 16, 28, 6, 1, '#d84a55');
+      px(g, 17, 28, 2, 1, '#ef7a82');
+      px(g, 14, 26, 1, 1, '#a52a33');
+      px(g, 23, 26, 1, 1, '#a52a33');
+
+      // argolla dorada
+      for (const [x, y] of [[9, 25], [10, 24], [11, 25], [8, 26], [8, 27], [12, 26], [8, 28], [12, 27], [9, 29], [11, 29], [10, 30], [12, 28]]) px(g, x, y, 1, 1, '#e6b84a');
     }),
   );
 }
@@ -568,49 +662,53 @@ function juanPortrait() {
 // Cofre abierto con los Four Lokos y otras cosas ricas (solo en la intro)
 function chestScene(loko) {
   return outline(
-    sprite(52, 44, (g) => {
+    sprite(70, 54, (g) => {
       const wood = '#a86f34';
       const woodDk = '#7d4f22';
       const edge = '#3d2a14';
       // tapa abierta (vista por dentro)
-      px(g, 4, 2, 44, 12, edge);
-      px(g, 5, 3, 42, 10, '#5a3a1c');
-      for (let x = 9; x < 47; x += 8) px(g, x, 3, 1, 10, '#4a2e15');
+      px(g, 4, 2, 62, 14, edge);
+      px(g, 5, 3, 60, 12, '#5a3a1c');
+      for (let x = 11; x < 65; x += 9) px(g, x, 3, 1, 12, '#4a2e15');
       // brillo dorado que sale del cofre
-      g.fillStyle = 'rgba(255,224,120,0.55)';
-      for (let i = 0; i < 9; i++) g.fillRect(8 + i * 4, 6 + (i % 3), 1, 6 - (i % 3));
+      g.fillStyle = 'rgba(255,224,120,0.5)';
+      for (let i = 0; i < 13; i++) g.fillRect(8 + i * 4, 6 + (i % 3), 1, 7 - (i % 3));
       // interior
-      px(g, 4, 14, 44, 8, '#2c1a0b');
-      // Four Lokos de pie (fila de atrás)
-      for (let i = 0; i < 5; i++) g.drawImage(loko, 7 + i * 6, 9 - (i % 2));
-      // pastel (como el de los bloques: crema blanca con cerezas)
-      px(g, 36, 11, 11, 3, '#fbfbf5');
-      px(g, 36, 14, 11, 6, '#c47a3d');
-      px(g, 36, 14, 11, 1, '#f2e6d0');
-      for (const cx of [38, 41, 44]) px(g, cx, 10, 1, 1, '#e3262f');
-      px(g, 37, 12, 1, 2, '#f2e6d0');
+      px(g, 4, 16, 62, 12, '#2c1a0b');
+      // los 5 Four Lokos de pie (fila de atrás)
+      for (let i = 0; i < 5; i++) g.drawImage(loko, 6 + i * 10, 9 - (i % 2) * 2);
+      // pastel con crema y cerezas
+      px(g, 53, 14, 13, 3, '#fbfbf5');
+      px(g, 53, 17, 13, 7, '#c47a3d');
+      px(g, 53, 17, 13, 1, '#f2e6d0');
+      px(g, 54, 19, 1, 2, '#f2e6d0');
+      px(g, 60, 20, 1, 3, '#f2e6d0');
+      for (const cx of [55, 59, 63]) px(g, cx, 13, 1, 1, '#e3262f');
       // pan, manzana y galleta delante
-      px(g, 6, 18, 8, 3, '#d49a4a');
-      px(g, 7, 17, 6, 1, '#e8b86a');
-      ellipse(g, 19, 18.5, 2.5, 2.5, '#d8282f');
-      px(g, 19, 15, 1, 2, '#5b3c22');
-      px(g, 20, 15, 2, 1, '#4caf3a');
-      px(g, 18, 17, 1, 1, '#ff8a8f');
-      ellipse(g, 27, 19, 2.6, 2.2, '#b9793e');
-      px(g, 26, 18, 1, 1, '#4a2a12');
-      px(g, 28, 20, 1, 1, '#4a2a12');
+      px(g, 7, 24, 9, 4, '#d49a4a');
+      px(g, 8, 23, 7, 1, '#e8b86a');
+      px(g, 9, 25, 1, 1, '#b07a35');
+      px(g, 12, 25, 1, 1, '#b07a35');
+      ellipse(g, 22, 25, 3, 3, '#d8282f');
+      px(g, 22, 21, 1, 2, '#5b3c22');
+      px(g, 23, 21, 2, 1, '#4caf3a');
+      px(g, 21, 23, 1, 1, '#ff8a8f');
+      ellipse(g, 32, 25.5, 3.2, 2.6, '#b9793e');
+      px(g, 31, 24, 1, 1, '#4a2a12');
+      px(g, 33, 26, 1, 1, '#4a2a12');
+      px(g, 30, 26, 1, 1, '#4a2a12');
       // caja del cofre
-      px(g, 2, 21, 48, 21, edge);
-      px(g, 3, 22, 46, 19, wood);
-      for (let y = 26; y < 41; y += 5) px(g, 3, y, 46, 1, woodDk);
-      px(g, 3, 22, 46, 2, '#c48a45');
+      px(g, 2, 27, 66, 25, edge);
+      px(g, 3, 28, 64, 23, wood);
+      for (let y = 33; y < 51; y += 6) px(g, 3, y, 64, 1, woodDk);
+      px(g, 3, 28, 64, 2, '#c48a45');
       // cerradura plateada
-      px(g, 23, 21, 6, 7, '#2a2a2a');
-      px(g, 24, 22, 4, 5, '#d8d8d8');
-      px(g, 25, 24, 2, 2, '#7a7a7a');
+      px(g, 31, 27, 8, 9, '#2a2a2a');
+      px(g, 32, 28, 6, 7, '#d8d8d8');
+      px(g, 34, 31, 2, 2, '#7a7a7a');
       // destellos
       g.fillStyle = '#fff6b0';
-      for (const [x, y] of [[3, 6], [48, 9], [33, 4], [15, 3]]) {
+      for (const [x, y] of [[3, 7], [66, 10], [47, 4], [20, 3], [36, 1]]) {
         g.fillRect(x, y, 1, 1);
         g.fillRect(x - 1, y + 1, 3, 1);
         g.fillRect(x, y + 2, 1, 1);

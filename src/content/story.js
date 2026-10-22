@@ -45,7 +45,7 @@ export const crosswordToasts = {
   win: '¡Crucigrama completo! Me conoces mejor que nadie 💜',
 };
 
-// Cinemática de inicio del billar. who: 'V' = el Quiz, 'P' = Sofía. La última línea es de Sofía y abre el botón "lista".
+// Cinemática de inicio del billar. who: 'V' = el Quiz, 'P' = Laura. La última línea es de Laura y abre el botón "lista".
 export const poolIntro = [
   { who: 'V', text: '¡JAJAJA! Por fin llegas… Soy el Quiz de Fenómenos de Transporte 📄😈' },
   { who: 'P', text: 'Ay no… ¿tú otra vez? Si ya me arruinaste medio semestre 😩' },
