@@ -16,6 +16,36 @@ const GAMES = { sudoku, crossword, pool, craft, gym };
 const BACK = '<svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M15 5l-7 7 7 7"/></svg>';
 const timeLabel = (s) => (s == null ? 'Sin límite' : formatTime(s));
 
+// Espera a que el navegador pinte (con un tope por si la pestaña está en segundo plano).
+const nextPaint = () =>
+  new Promise((resolve) => {
+    let done = false;
+    const fin = () => {
+      if (!done) {
+        done = true;
+        resolve();
+      }
+    };
+    requestAnimationFrame(() => setTimeout(fin, 0));
+    setTimeout(fin, 150);
+  });
+
+// Precarga en tiempo libre lo pesado de cada nivel (texturas, personajes…), una sola vez.
+const warmed = new Set();
+const idle = (fn) => (window.requestIdleCallback ? requestIdleCallback(fn, { timeout: 2000 }) : setTimeout(fn, 250));
+function prewarm(id) {
+  if (warmed.has(id) || !GAMES[id]?.prewarm) return;
+  idle(() => {
+    if (warmed.has(id)) return;
+    warmed.add(id);
+    try {
+      GAMES[id].prewarm();
+    } catch {
+      /* si falla, el nivel lo prepara al abrirse */
+    }
+  });
+}
+
 export class GameShell {
   constructor(root) {
     this.root = root;
@@ -100,7 +130,7 @@ export class GameShell {
   syncTimer() {
     const s = this.session;
     if (!this.timer || !s) return;
-    if (s.finished || s.frozen || s.held || this.modal || document.hidden) this.timer.pause();
+    if (s.loading || s.finished || s.frozen || s.held || this.modal || document.hidden) this.timer.pause();
     else this.timer.resume();
   }
 
@@ -241,6 +271,7 @@ export class GameShell {
       ${prize}`,
       'map',
     );
+    LEVELS.forEach((l, i) => this.levelState(i) !== 'locked' && prewarm(l.id));
     el.addEventListener('click', (e) => {
       if (e.target.closest('[data-act=home]')) return this.showCover();
       if (e.target.closest('[data-act=prize]')) return this.showFinal();
@@ -273,14 +304,21 @@ export class GameShell {
       </div>`,
       'intro',
     );
+    prewarm(lvl.id);
     el.addEventListener('click', (e) => {
       const act = e.target.closest('[data-act]')?.dataset.act;
-      if (act === 'go') this.play(i);
+      if (act === 'go') {
+        const b = e.target.closest('[data-act=go]');
+        if (b.disabled) return;
+        b.disabled = true;
+        b.classList.add('is-loading');
+        this.play(i);
+      }
       if (act === 'back') this.showMap();
     });
   }
 
-  play(i) {
+  async play(i) {
     const lvl = LEVELS[i];
     const el = this.render(
       `
@@ -289,10 +327,19 @@ export class GameShell {
         <span class="hud-name">${lvl.name}</span>
         <span class="hud-time" id="time">${formatTime(lvl.seconds)}</span>
       </header>
-      <section class="stage" id="stage"></section>`,
+      <section class="stage" id="stage">
+        <div class="veil" aria-live="polite">
+          <div class="glass veil-card">
+            <div class="orb orb-lg">${icon(lvl.icon)}</div>
+            <p>Preparando <b>${lvl.name}</b></p>
+            <span class="veil-bar"><i></i></span>
+          </div>
+        </div>
+      </section>`,
       'play',
     );
-    const session = { finished: false, frozen: false, held: false, level: i };
+    // Mientras carga: el reloj no corre y la pantalla de carga absorbe los toques (no se salta la cinemática).
+    const session = { finished: false, frozen: false, held: false, loading: true, level: i };
     this.session = session;
     const live = () => this.session === session;
     // Cada final (ganar, perder, tiempo) se acepta una sola vez y solo de la partida actual.
@@ -313,8 +360,16 @@ export class GameShell {
         () => end(false),
       );
     }
+    el.querySelector('[data-act="quit"]').addEventListener('click', () => this.askQuit());
+    const veil = el.querySelector('.veil');
+    await nextPaint(); // primero se ve la pantalla de carga
+    if (!live()) return;
     this.game = GAMES[lvl.id]();
+    let markReady;
+    const ready = new Promise((r) => (markReady = r));
     const ctx = {
+      // se cumple cuando la pantalla de carga se va: las cinemáticas empiezan a escribir recién ahí
+      ready,
       win: () => end(true),
       lose: (reason) => end(false, reason),
       // El juego ya está resuelto (animación de victoria): el reloj se detiene para no perder por segundos.
@@ -335,7 +390,13 @@ export class GameShell {
     this.timer?.start();
     this.syncTimer();
     this.keepAwake();
-    el.querySelector('[data-act="quit"]').addEventListener('click', () => this.askQuit());
+    await nextPaint(); // el juego ya pintó su primer cuadro
+    if (!live()) return;
+    session.loading = false;
+    this.syncTimer();
+    veil.classList.add('gone');
+    markReady();
+    setTimeout(() => veil.remove(), 400);
   }
 
   async askQuit() {

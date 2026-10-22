@@ -1,6 +1,19 @@
 // Todo el pixel-art se dibuja por código (sin archivos de imagen).
 import { R, W, H, RAIL, LW, LH, POCKETS } from './physics.js';
 import { FRONT } from './rotation.js';
+// Los recursos pesados se dibujan una sola vez y se reutilizan (abrir un nivel por segunda vez es instantáneo).
+const memo = (fn) => {
+  const cache = new Map();
+  return (...args) => {
+    const key = args.join('|');
+    if (!cache.has(key)) cache.set(key, fn(...args));
+    return cache.get(key);
+  };
+};
+export const makeBallShadow = memo(() => buildBallShadow());
+export const makeBallSet = memo(() => buildBallSet());
+export const makeTable = memo(() => buildTable());
+
 
 export const BALL_COLORS = {
   1: '#f5d33b',
@@ -100,7 +113,7 @@ export function makeBallSprite(id) {
   return cg[0];
 }
 
-export function makeBallShadow() {
+function buildBallShadow() {
   const D = R * 2;
   const [c, g] = canvas(D + 2, D + 2);
   const img = g.createImageData(D + 2, D + 2);
@@ -112,7 +125,7 @@ export function makeBallShadow() {
   return c;
 }
 
-export function makeBallSet() {
+function buildBallSet() {
   const set = {};
   for (let i = 0; i <= 15; i++) set[i] = makeBallSprite(i);
   return set;
@@ -126,7 +139,7 @@ function disc(g, cx, cy, r, color) {
       if (Math.hypot(x + 0.5 - cx, y + 0.5 - cy) <= r) g.fillRect(x, y, 1, 1);
 }
 
-export function makeTable() {
+function buildTable() {
   const [c, g] = canvas(LW, LH);
   // madera
   rect(g, 0, 0, LW, LH, '#6a3d20');

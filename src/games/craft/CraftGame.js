@@ -199,7 +199,12 @@ export function createCraft() {
       let typing = false;
       const d = els.dialog;
       d.hidden = false;
+      // Protección contra toques dobles: cada frase ignora toques un instante y Saltar no responde de inmediato
+      const openedAt = performance.now();
+      let calmUntil = 0;
+      const calm = (ms) => (calmUntil = performance.now() + ms);
       const show = () => {
+        calm(380);
         const l = lines[i];
         const last = i === lines.length - 1;
         d.dataset.who = l.who;
@@ -243,7 +248,11 @@ export function createCraft() {
       const onTap = (e) => {
         if (e.target.closest('.mc-dok, .mc-skip')) return;
         audio.unlock();
-        if (typing) return d._done();
+        if (performance.now() < calmUntil) return;
+        if (typing) {
+          calm(260);
+          return d._done();
+        }
         if (i < lines.length - 1) {
           i++;
           show();
@@ -259,8 +268,8 @@ export function createCraft() {
         resolve();
       };
       d.addEventListener('pointerdown', onTap);
-      els.dok.onclick = finish;
-      els.dskip.onclick = finish;
+      els.dok.onclick = () => performance.now() >= calmUntil && finish();
+      els.dskip.onclick = () => performance.now() - openedAt > 600 && finish();
       show();
     });
   }
@@ -290,9 +299,11 @@ export function createCraft() {
   function startSurvival() {
     stage = 'survival';
     wonHandled = false;
-    sim = new Survival(Math.floor(Math.random() * 1e9));
+    // La primera noche reutiliza el mundo que ya se generó para la intro (abre más rápido)
+    const fresh = !sim || sim.t > 0 || sim.result;
+    if (fresh) sim = new Survival(Math.floor(Math.random() * 1e9));
     rd.particles = [];
-    rd.setWorld(sim.world);
+    if (fresh || rd.world !== sim.world) rd.setWorld(sim.world);
     fit();
     rd.follow(centerX(sim.player), centerY(sim.player), 0, true, 0.42);
     els.shud.hidden = false;
@@ -891,6 +902,8 @@ export function createCraft() {
       last = performance.now();
       raf = requestAnimationFrame(frame);
       stage = 'intro';
+      await ctx.ready; // la intro empieza cuando ya se ve el nivel
+      if (ended) return;
       await dialog(maincraIntro, maincraIntroButton);
       if (!ended) startSurvival();
     },

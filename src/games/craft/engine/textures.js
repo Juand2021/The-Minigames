@@ -3,6 +3,20 @@ import { B } from './blocks.js';
 import { rng } from './world.js';
 
 export const T = 16;
+// Los recursos pesados se dibujan una sola vez y se reutilizan (abrir un nivel por segunda vez es instantáneo).
+const memo = (fn) => {
+  const cache = new Map();
+  return (...args) => {
+    const key = args.join('|');
+    if (!cache.has(key)) cache.set(key, fn(...args));
+    return cache.get(key);
+  };
+};
+export const makeBlockTextures = memo(() => buildBlockTextures());
+export const makeCracks = memo(() => buildCracks());
+export const makeCharacterSprites = memo(() => buildCharacterSprites());
+export const lauraPortrait = memo((wink = false) => buildLauraPortrait(wink));
+
 
 const hex = (c) => [1, 3, 5].map((i) => parseInt(c.slice(i, i + 2), 16));
 const jit = (c, r, amt) => c.map((v) => Math.max(0, Math.min(255, Math.round(v + (r() - 0.5) * amt))));
@@ -95,7 +109,7 @@ function ore(seed, spot) {
   return tex(seed + 9, (x, y, rr) => (spots.has(`${x},${y}`) ? jit(hex(spot), rr, 30) : stonePx(rr)));
 }
 
-export function makeBlockTextures() {
+function buildBlockTextures() {
   const t = {};
   t[B.GRASS] = tex(11, (x, y, r) => {
     const edge = 3 + (((x * 7) % 5) < 2 ? 1 : 0);
@@ -181,7 +195,7 @@ export function makeBlockTextures() {
 }
 
 // Grietas al picar (10 etapas)
-export function makeCracks() {
+function buildCracks() {
   const r = rng(77);
   const pts = [];
   let x = 8;
@@ -337,7 +351,7 @@ function sprite(w, h, draw) {
   return c;
 }
 
-export function makeCharacterSprites() {
+function buildCharacterSprites() {
   const s = {};
   for (const frame of [0, 1, 2]) {
     s[`sofia${frame}`] = sprite(22, 30, (g) => humanoid(g, SOFIA, { frame, swing: 0 }));
@@ -510,7 +524,7 @@ function outline(c, color = [20, 14, 24]) {
 
 // Retrato de Laura para las cinemáticas: pelo castaño oscuro ondulado con raya al medio,
 // mechones rubios al frente, pecas, lunar sobre el labio, labios rojos, argolla dorada y chaqueta negra con cremallera.
-export function lauraPortrait(wink = false) {
+function buildLauraPortrait(wink = false) {
   return outline(
     sprite(38, 46, (g) => {
       const hair = '#2b1a13';

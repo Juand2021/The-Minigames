@@ -639,7 +639,11 @@ export function createPool() {
     ready: introEl.querySelector('.pi-ready'),
   });
 
+  let introCalm = Infinity; // protección contra toques dobles (hasta que empieza no responde)
+  let introOpenedAt = 0;
   function showIntroStep() {
+    introCalm = performance.now() + 380;
+    if (!introOpenedAt) introOpenedAt = performance.now();
     const s = poolIntro[introStep];
     const e = introEls();
     const last = introStep === poolIntro.length - 1;
@@ -670,7 +674,11 @@ export function createPool() {
 
   function onIntroTap(e) {
     if (phase !== 'intro' || e.target.closest('.pi-skip, .pi-ready')) return;
-    if (introTyping) return introEl._finish();
+    if (performance.now() < introCalm) return;
+    if (introTyping) {
+      introCalm = performance.now() + 260;
+      return introEl._finish();
+    }
     if (introStep < poolIntro.length - 1) {
       introStep++;
       sfx.tap();
@@ -758,14 +766,15 @@ export function createPool() {
       powerBox.addEventListener('pointerup', onPowerUp);
       powerBox.addEventListener('pointercancel', onPowerUp);
       introEl.addEventListener('pointerdown', onIntroTap);
-      introEl.querySelector('.pi-skip').addEventListener('click', endIntro);
-      introEl.querySelector('.pi-ready').addEventListener('click', endIntro);
+      introEl.querySelector('.pi-skip').addEventListener('click', () => introOpenedAt && performance.now() - introOpenedAt > 600 && endIntro());
+      introEl.querySelector('.pi-ready').addEventListener('click', () => performance.now() >= introCalm && endIntro());
 
       if (location.search.includes('debug')) window.__poolDebug = { match, endGame };
       defaultAim();
       setControls();
       ctx.hold?.(true); // el tiempo no corre mientras se lee la cinemática
-      showIntroStep();
+      // la cinemática empieza a escribir cuando ya se ve el nivel
+      Promise.resolve(ctx.ready).then(() => !ended && showIntroStep());
       last = performance.now();
       raf = requestAnimationFrame(frame);
     },

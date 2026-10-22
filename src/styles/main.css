@@ -793,3 +793,64 @@ h3 {
   vertical-align: -0.16em;
   margin-left: 0.15em;
 }
+
+/* ---------- pantalla de carga al abrir un nivel ---------- */
+.veil {
+  position: absolute;
+  inset: 0;
+  z-index: 60;
+  display: grid;
+  place-items: center;
+  background: rgba(14, 6, 30, 0.55);
+  transition: opacity 0.35s ease;
+}
+.veil.gone {
+  opacity: 0;
+  pointer-events: none;
+}
+.veil-card {
+  display: grid;
+  justify-items: center;
+  gap: 12px;
+  padding: 22px 26px;
+  min-width: 220px;
+  text-align: center;
+}
+.veil-card p {
+  margin: 0;
+  font-size: 1rem;
+  color: var(--muted);
+}
+.veil-card b {
+  display: block;
+  margin-top: 2px;
+  font-size: 1.3rem;
+  color: #fff;
+}
+.veil-bar {
+  width: 160px;
+  height: 6px;
+  border-radius: 999px;
+  overflow: hidden;
+  background: rgba(255, 255, 255, 0.14);
+}
+.veil-bar i {
+  display: block;
+  width: 40%;
+  height: 100%;
+  border-radius: inherit;
+  background: linear-gradient(90deg, var(--accent), var(--violet));
+  animation: loadbar 0.9s ease-in-out infinite;
+}
+.btn.is-loading {
+  opacity: 0.75;
+  pointer-events: none;
+}
+@keyframes loadbar {
+  from {
+    transform: translateX(-110%);
+  }
+  to {
+    transform: translateX(260%);
+  }
+}
