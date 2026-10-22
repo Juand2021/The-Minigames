@@ -78,6 +78,18 @@ export const sfx = {
     [523, 659, 784].forEach((f, i) => tone(f, { dur: 0.22, delay: i * 0.06, type: 'triangle' }));
     buzz(20);
   },
+  // bloque del premio: golpe con tono que sube y rotura final
+  bump(n = 1) {
+    const f = 300 + n * 55;
+    tone(f, { dur: 0.09, type: 'square', vol: 0.07, slide: 1.6 });
+    tone(f * 2, { dur: 0.07, type: 'triangle', vol: 0.04, delay: 0.04 });
+    buzz(18);
+  },
+  shatter() {
+    [1568, 1319, 1047, 784, 659, 523].forEach((f, i) => tone(f, { dur: 0.2, type: 'square', vol: 0.05, delay: i * 0.04, slide: 0.7 }));
+    tone(90, { dur: 0.6, type: 'sawtooth', vol: 0.09, slide: 0.4 });
+    buzz([60, 40, 120]);
+  },
   // mascotas
   bark() {
     tone(420, { dur: 0.09, type: 'square', vol: 0.06, slide: 0.55 });

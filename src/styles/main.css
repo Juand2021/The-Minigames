@@ -854,3 +854,37 @@ h3 {
     transform: translateX(260%);
   }
 }
+
+/* ---------- pantalla final con el bloque del premio ---------- */
+.final {
+  flex: 1;
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+  text-align: center;
+}
+.final .display {
+  font-size: clamp(2rem, 9vw, 2.6rem);
+}
+.final-prize {
+  position: relative;
+  flex: 1;
+  min-height: 0;
+  width: calc(100% + 32px);
+  margin: 0 -16px;
+  display: flex;
+}
+.final-actions {
+  position: relative;
+  z-index: 6;
+  width: 100%;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+}
+.final-actions .btn {
+  min-height: 46px;
+  font-size: 0.95rem;
+}

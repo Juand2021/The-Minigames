@@ -4,6 +4,7 @@ import { reward } from '../content/reward.js';
 import { loadProgress, saveProgress, resetProgress } from './progress.js';
 import { Timer, formatTime } from './timer.js';
 import { burst } from '../games/shared/confetti.js';
+import { mountPrize } from '../ui/prize.js';
 import { icon, glyph } from '../ui/icons.js';
 import sudoku from '../games/sudoku/index.js';
 import crossword from '../games/crossword/index.js';
@@ -112,6 +113,8 @@ export class GameShell {
     this.game = null;
     this.stopConfetti?.();
     this.stopConfetti = null;
+    this.prize?.destroy();
+    this.prize = null;
     this.releaseWake();
   }
 
@@ -462,20 +465,19 @@ export class GameShell {
     if (!this.allDone && !UNLOCK_ALL) return this.showMap();
     const el = this.render(
       `
-      <div class="result win reveal">
-        <div class="orb orb-xl">${icon('trophy')}</div>
+      <div class="final">
         <p class="eyebrow">Las ${LEVELS.length} pruebas superadas</p>
         <h1 class="display">${reward.title}</h1>
-        <p class="glass bubble">${reward.message}</p>
-        <p class="glass prize">${reward.detail}</p>
-        <div class="actions">
+        <div class="final-prize"></div>
+        <div class="final-actions">
           <button class="btn btn-ghost" data-act="map">Ver el camino</button>
-          <button class="btn btn-ghost" data-act="back">Volver al inicio</button>
+          <button class="btn btn-ghost" data-act="back">Inicio</button>
         </div>
       </div>`,
       'final',
     );
-    this.stopConfetti = burst(this.root, { count: 160, duration: 4200 });
+    // El premio: un bloque "?" que hay que romper a golpes
+    this.prize = mountPrize(el.querySelector('.final-prize'));
     el.addEventListener('click', (e) => {
       const act = e.target.closest('[data-act]')?.dataset.act;
       if (act === 'back') this.showCover();
