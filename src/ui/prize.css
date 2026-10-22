@@ -281,10 +281,12 @@
   display: none;
 }
 .pz-card {
+  box-sizing: border-box;
   width: 100%;
   max-width: 350px;
-  padding: 26px 22px 22px;
+  padding: 26px 20px 22px;
   display: grid;
+  grid-template-columns: minmax(0, 1fr); /* nada puede ensanchar la tarjeta: siempre centrada */
   justify-items: center;
   gap: 10px;
   text-align: center;
@@ -299,7 +301,9 @@
 }
 .pz-congrats {
   margin: 0;
-  font-size: clamp(2rem, 10vw, 2.6rem);
+  max-width: 100%;
+  font-size: clamp(1.45rem, 7.4vw, 2.15rem);
+  overflow-wrap: anywhere;
   line-height: 1;
   background: linear-gradient(90deg, #ffd166, #ff6fb5, #9b6bff, #5ee6a8, #ffd166);
   background-size: 300% 100%;
@@ -332,8 +336,19 @@
   text-shadow: 0 0 18px rgba(255, 79, 163, 0.6);
 }
 .pz-claim-btn {
+  box-sizing: border-box;
   margin-top: 8px;
-  max-width: none;
+  width: 100%;
+  max-width: 100%;
+  justify-self: stretch;
+}
+.pz-line,
+.pz-price {
+  max-width: 100%;
+  overflow-wrap: anywhere;
+}
+.pz-voucher {
+  box-sizing: border-box;
 }
 
 /* vale */

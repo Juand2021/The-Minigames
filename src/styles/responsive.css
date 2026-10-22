@@ -1,0 +1,85 @@
+/* ============================================================
+   Ajustes para que todo quepa en cualquier pantalla
+   (del celular más angosto, 320 px, a tablets y computador).
+   Se carga después de main.css y arcade.css.
+   ============================================================ */
+
+/* Las columnas de la tarjeta de nivel pueden encogerse: nada empuja la tarjeta fuera de la pantalla */
+.level {
+  grid-template-columns: auto minmax(0, 1fr) auto;
+}
+.level-text b,
+.level-text small {
+  overflow-wrap: anywhere;
+}
+
+/* Botones de la pantalla final: dos columnas que siempre caben */
+.final-actions {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+.final-actions .btn {
+  min-width: 0;
+  padding: 0 10px;
+  white-space: normal;
+  line-height: 1.1;
+}
+
+/* Cualquier botón ancho respeta el ancho de su contenedor */
+.btn {
+  box-sizing: border-box;
+  max-width: min(340px, 100%);
+}
+
+/* ---------- celulares angostos (≤ 360 px: iPhone SE, Android pequeños) ---------- */
+@media (max-width: 360px) {
+  .level {
+    gap: 10px;
+    padding: 10px 12px;
+  }
+  .level-orb {
+    width: 46px;
+    height: 46px;
+    font-size: 1.45rem;
+  }
+  .level-text b {
+    font-size: 0.95rem;
+  }
+  .level-text small {
+    font-size: 0.76rem;
+  }
+  .level-meta {
+    gap: 5px;
+  }
+  .state,
+  .level-meta .tile,
+  .level-meta .chip {
+    padding: 3px 7px;
+    font-size: 0.64rem;
+  }
+  .final-actions .btn {
+    font-size: 0.78rem;
+  }
+  .display {
+    font-size: clamp(1.8rem, 10vw, 2.4rem);
+  }
+}
+
+/* ---------- pantallas bajas (celulares pequeños o en horizontal) ---------- */
+@media (max-height: 620px) {
+  .orb-xl {
+    width: 96px;
+    height: 96px;
+    font-size: 3rem;
+  }
+  .pz {
+    --s: min(36vw, 130px);
+    gap: 10px;
+  }
+}
+
+/* ---------- tablets y computador: el juego mantiene formato de teléfono, centrado ---------- */
+@media (min-width: 700px) {
+  #app {
+    max-width: 480px;
+  }
+}

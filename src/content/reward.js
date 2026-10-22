@@ -8,15 +8,15 @@ export const reward = {
 
   congrats: '¡FELICIDADES!',
   lines: ['Ganaste tu premio, y te lo mereces todo.', 'Te quiero muchísimo.'],
-  claim: 'Para que te lo entreguen en la vida real solo hay un requisito:',
-  price: 'Darme un beso',
+  claim: 'Para reclamar este premio en la vida real hay un solo requisito:',
+  price: 'Pagarlo con un beso',
   claimButton: 'Reclamar mi premio',
 
   voucher: {
     title: 'VALE POR TU PREMIO',
     to: 'Laura',
     price: '1 beso',
-    note: 'Muéstramelo para reclamarlo. No caduca.',
+    note: 'Se reclama en persona y se paga con un beso. No caduca.',
     stamp: 'GANADO',
   },
 };

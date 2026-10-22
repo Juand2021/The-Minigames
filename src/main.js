@@ -4,6 +4,7 @@ import '@fontsource/chakra-petch/latin-600.css';
 import '@fontsource/chakra-petch/latin-700.css';
 import './styles/main.css';
 import './styles/arcade.css';
+import './styles/responsive.css';
 import { GameShell } from './shell/shell.js';
 import { mountIcons } from './ui/icons.js';
 
