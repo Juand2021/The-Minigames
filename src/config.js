@@ -1,8 +1,8 @@
 // Ajustes globales. Los tiempos están en segundos (null = sin límite).
 export const LEVELS = [
-  { id: 'sudoku', icon: 'sudoku', name: 'Sudoku', tagline: 'Números y pura lógica', seconds: 5 * 60 },
-  { id: 'crossword', icon: 'crossword', name: 'Crucigrama', tagline: 'Pistas sobre nosotros', seconds: 5 * 60 },
-  { id: 'pool', icon: 'pool', name: 'Billar', tagline: 'Duelo contra el Quiz', seconds: 8 * 60 },
+  { id: 'sudoku', icon: 'sudoku', name: 'Sudoku', tagline: 'Números y pura lógica', seconds: 10 * 60 },
+  { id: 'crossword', icon: 'crossword', name: 'Crucigrama', tagline: 'Pistas sobre nosotros', seconds: 6 * 60 },
+  { id: 'pool', icon: 'pool', name: 'Billar', tagline: 'Duelo contra el Quiz', seconds: null },
   { id: 'craft', icon: 'craft', name: 'Maincra', tagline: 'Sobrevive y construye', seconds: null }, // sin límite de tiempo (por ahora)
   { id: 'gym', icon: 'gym', name: 'Gym', tagline: 'Sentadillas, dominadas y curl', seconds: 3 * 60 },
 ];

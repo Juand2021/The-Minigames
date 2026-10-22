@@ -5,7 +5,7 @@ import { burst } from '../shared/confetti.js';
 import { icon } from '../../ui/icons.js';
 import { sudokuToasts } from '../../content/story.js';
 
-const HINTS = 3;
+const HINTS = 6;
 const CLUES = 38;
 const pick = (arr) => arr[Math.floor(Math.random() * arr.length)];
 
