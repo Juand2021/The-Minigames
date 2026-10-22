@@ -17,6 +17,9 @@ const CURL_MS = 320;
 const LIVES = 3;
 const DRAIN = { squat: 0.4, pullup: 0.31, curl: 0.4 }; // energía que pierde por segundo al empezar (+30 % sobre la versión anterior)
 const DRAIN_PER_REP = 0.04; // y cada repetición la hace un poco más difícil
+// Dificultad extra por ejercicio: la energía baja así de más rápido, y hay que tocar/deslizar así de más rápido
+// para seguir el ritmo (sentadilla +40 %, dominadas +60 %, curl +30 %).
+const HARDER = { squat: 1.4, pullup: 1.6, curl: 1.3 };
 const GAIN = { squat: 0.14, curl: 0.16, pullup: 0.55 }; // energía por toque (en dominadas, por recorrido completo del dedo)
 const START_ENERGY = 1;
 const RECOVER_ENERGY = 0.8;
@@ -576,7 +579,7 @@ export function createGym() {
     if (phase === 'play') {
       if (!started && now - playSince > 4000) started = true; // no se queda esperando para siempre
       if (started) {
-        energy -= (DRAIN[id] + DRAIN_PER_REP * reps) * dt;
+        energy -= (DRAIN[id] + DRAIN_PER_REP * reps) * HARDER[id] * dt;
         if (energy < 0.3 && energy > 0 && now - lastWarn > 2400) {
           lastWarn = now;
           toast(pick(gymLines.low));
