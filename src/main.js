@@ -1,5 +1,6 @@
 import './styles/main.css';
 import { GameShell } from './shell/shell.js';
+import { mountIcons } from './ui/icons.js';
 
 // Sin zoom en el móvil (doble toque y pellizco), también en iOS/Safari que ignora el meta viewport.
 for (const ev of ['gesturestart', 'gesturechange', 'gestureend', 'dblclick']) {
@@ -24,4 +25,5 @@ try {
   /* Safari y otros no lo permiten: no pasa nada */
 }
 
+mountIcons();
 new GameShell(document.getElementById('app')).start();

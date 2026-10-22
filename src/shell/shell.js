@@ -4,6 +4,7 @@ import { reward } from '../content/reward.js';
 import { loadProgress, saveProgress, resetProgress } from './progress.js';
 import { Timer, formatTime } from './timer.js';
 import { burst } from '../games/shared/confetti.js';
+import { icon } from '../ui/icons.js';
 import sudoku from '../games/sudoku/index.js';
 import crossword from '../games/crossword/index.js';
 import pool from '../games/pool/index.js';
@@ -122,14 +123,14 @@ export class GameShell {
   }
 
   /* ---------- ventana de confirmación (vidrio) ---------- */
-  confirm({ icon = '🤔', title, text, ok, cancel, danger = false }) {
+  confirm({ art = 'question', title, text, ok, cancel, danger = false }) {
     this.closeModal();
     return new Promise((resolve) => {
       const el = document.createElement('div');
       el.className = 'modal';
       el.innerHTML = `
         <div class="glass sheet" role="dialog" aria-modal="true">
-          <div class="orb orb-sm">${icon}</div>
+          <div class="orb orb-sm">${icon(art)}</div>
           <h3>${title}</h3>
           <p>${text}</p>
           <div class="sheet-actions">
@@ -167,14 +168,14 @@ export class GameShell {
     const done = Math.min(this.progress.unlocked, LEVELS.length);
     const pips = LEVELS.map((l, i) => {
       const st = i < done ? 'done' : i === done ? 'next' : 'locked';
-      return `<span class="pip ${st}" title="${l.name}">${st === 'done' ? '✅' : l.icon}</span>`;
+      return `<span class="pip ${st}" title="${l.name}">${st === 'done' ? icon('check') : icon(l.icon)}</span>`;
     }).join('');
-    const label = this.allDone ? 'Ver tu premio 🏆' : done > 0 ? 'Continuar ▸' : `${cover.button} ▸`;
-    const note = done === 0 ? 'Tu aventura está por comenzar' : this.allDone ? `¡Superaste las ${LEVELS.length} pruebas! 🎉` : `${done} de ${LEVELS.length} pruebas superadas`;
+    const label = this.allDone ? `Ver tu premio ${icon('trophy')}` : done > 0 ? `Continuar ${icon('chev-r')}` : `${cover.button} ${icon('chev-r')}`;
+    const note = done === 0 ? 'Tu aventura está por comenzar' : this.allDone ? `¡Superaste las ${LEVELS.length} pruebas!` : `${done} de ${LEVELS.length} pruebas superadas`;
     const el = this.render(
       `
       <div class="cover reveal">
-        <div class="orb orb-xl"><span>💜</span></div>
+        <div class="orb orb-xl">${icon('heart-violet')}</div>
         <p class="eyebrow">${cover.eyebrow}</p>
         <h1 class="display">${cover.title}</h1>
         <p class="lead">${cover.subtitle}</p>
@@ -196,7 +197,7 @@ export class GameShell {
       if (act === 'map') this.showMap();
       if (act === 'reset') {
         const yes = await this.confirm({
-          icon: '🧹',
+          art: 'broom',
           title: '¿Empezar de cero?',
           text: `Se borrará el progreso de las ${LEVELS.length} pruebas.`,
           ok: 'Sí, reiniciar',
@@ -215,18 +216,18 @@ export class GameShell {
     const done = Math.min(this.progress.unlocked, LEVELS.length);
     const items = LEVELS.map((l, i) => {
       const st = this.levelState(i);
-      const label = st === 'done' ? '✓ Superada' : st === 'locked' ? '🔒' : 'Jugar ▸';
+      const label = st === 'done' ? `${icon('check-mark')} Superada` : st === 'locked' ? icon('lock') : `Jugar ${icon('chev-r')}`;
       const current = i === this.progress.unlocked ? 'current' : '';
       return `<li style="--i:${i}">
         <button class="glass level node ${st} ${current}" data-i="${i}" ${st === 'locked' ? 'disabled aria-disabled="true"' : ''}>
-          <span class="orb level-orb">${l.icon}</span>
+          <span class="orb level-orb">${icon(l.icon)}</span>
           <span class="level-text"><b>${l.name}</b><small>${st === 'locked' ? 'Supera la anterior para abrirla' : l.tagline}</small></span>
-          <span class="level-meta"><span class="state">${label}</span><span class="chip">⏱ ${timeLabel(l.seconds)}</span></span>
+          <span class="level-meta"><span class="state">${label}</span><span class="chip">${icon('timer')} ${timeLabel(l.seconds)}</span></span>
         </button>
       </li>`;
     }).join('');
     const prize = this.allDone
-      ? `<button class="glass level prize-card" data-act="prize"><span class="orb level-orb">🏆</span><span class="level-text"><b>Tu premio</b><small>¡Lo lograste! Toca para verlo</small></span></button>`
+      ? `<button class="glass level prize-card" data-act="prize"><span class="orb level-orb">${icon('trophy')}</span><span class="level-text"><b>Tu premio</b><small>¡Lo lograste! Toca para verlo</small></span></button>`
       : '';
     const el = this.render(
       `
@@ -256,12 +257,12 @@ export class GameShell {
         <button class="glass icon-btn" data-act="back" aria-label="Volver al mapa">${BACK}</button>
       </header>
       <div class="intro reveal">
-        <div class="orb orb-xl">${lvl.icon}</div>
+        <div class="orb orb-xl">${icon(lvl.icon)}</div>
         <p class="eyebrow">Prueba ${i + 1} de ${LEVELS.length}</p>
         <h2 class="display-sm">${lvl.name}</h2>
         <p class="glass bubble">${intros[lvl.id]}</p>
-        <div class="chips"><span class="chip">⏱ ${timeLabel(lvl.seconds)}</span><span class="chip">🎯 ${lvl.tagline}</span></div>
-        <div class="actions"><button class="btn btn-primary" data-act="go">¡Vamos! ▸</button></div>
+        <div class="chips"><span class="chip">${icon('timer')} ${timeLabel(lvl.seconds)}</span><span class="chip">${icon('target')} ${lvl.tagline}</span></div>
+        <div class="actions"><button class="btn btn-primary" data-act="go">¡Vamos! ${icon('chev-r')}</button></div>
       </div>`,
       'intro',
     );
@@ -277,8 +278,8 @@ export class GameShell {
     const el = this.render(
       `
       <header class="glass hud">
-        <button class="hud-btn" data-act="quit" aria-label="Salir">✕</button>
-        <span class="hud-name">${lvl.icon} ${lvl.name}</span>
+        <button class="hud-btn" data-act="quit" aria-label="Salir">${icon('close')}</button>
+        <span class="hud-name">${icon(lvl.icon)} ${lvl.name}</span>
         <span class="hud-time" id="time">${formatTime(lvl.seconds)}</span>
       </header>
       <section class="stage" id="stage"></section>`,
@@ -334,7 +335,7 @@ export class GameShell {
     if (this.screen !== 'play' || this.modal) return;
     const lvl = LEVELS[this.session?.level ?? 0];
     const yes = await this.confirm({
-      icon: '🚪',
+      art: 'door',
       title: '¿Salir de la prueba?',
       text:
         lvl.seconds == null
@@ -358,23 +359,23 @@ export class GameShell {
     const tries = this.progress.attempts[lvl.id];
     let actions;
     if (!won) {
-      actions = `<button class="btn btn-primary" data-act="retry">Reintentar ▸</button>
+      actions = `<button class="btn btn-primary" data-act="retry">Reintentar ${icon('retry')}</button>
         <button class="btn btn-ghost" data-act="map">Volver al mapa</button>`;
     } else if (last || this.allDone) {
-      actions = `<button class="btn btn-primary" data-act="final">Ver tu premio 🏆</button>
+      actions = `<button class="btn btn-primary" data-act="final">Ver tu premio ${icon('trophy')}</button>
         <button class="btn btn-ghost" data-act="map">Ver el camino</button>`;
     } else {
-      actions = `<button class="btn btn-primary" data-act="next">Siguiente: ${next.icon} ${next.name} ▸</button>
+      actions = `<button class="btn btn-primary" data-act="next">Siguiente: ${icon(next.icon)} ${next.name} ${icon('chev-r')}</button>
         <button class="btn btn-ghost" data-act="map">Ver el camino</button>`;
     }
     const el = this.render(
       `
       <div class="result ${won ? 'win' : 'lose'} reveal">
-        <div class="orb orb-xl">${won ? '🎉' : reason ? '💔' : '⏰'}</div>
-        <p class="eyebrow">${lvl.icon} ${lvl.name}</p>
+        <div class="orb orb-xl">${icon(won ? 'party' : reason ? 'broken-heart' : 'alarm')}</div>
+        <p class="eyebrow">${icon(lvl.icon)} ${lvl.name}</p>
         <h2 class="display-sm">${won ? '¡Ganaste!' : reason ? 'Perdiste' : 'Tiempo agotado'}</h2>
         <p class="glass bubble">${msg}</p>
-        <div class="chips"><span class="chip">${won ? '🏅' : '🔁'} Intento ${tries}</span></div>
+        <div class="chips"><span class="chip">${icon(won ? 'medal' : 'retry')} Intento ${tries}</span></div>
         <div class="actions">${actions}</div>
       </div>`,
       'result',
@@ -394,7 +395,7 @@ export class GameShell {
     const el = this.render(
       `
       <div class="result win reveal">
-        <div class="orb orb-xl">🏆</div>
+        <div class="orb orb-xl">${icon('trophy')}</div>
         <p class="eyebrow">Las ${LEVELS.length} pruebas superadas</p>
         <h1 class="display">${reward.title}</h1>
         <p class="glass bubble">${reward.message}</p>

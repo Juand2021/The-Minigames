@@ -8,6 +8,7 @@ import { lauraPortrait } from '../craft/engine/textures.js';
 import { poolLines, poolIntro } from '../../content/story.js';
 import { sfx } from '../shared/sfx.js';
 import { burst } from '../shared/confetti.js';
+import { icon } from '../../ui/icons.js';
 
 const pick = (arr) => arr[Math.floor(Math.random() * arr.length)];
 const clamp = (v, a, b) => Math.max(a, Math.min(b, v));
@@ -76,8 +77,8 @@ export function createPool() {
         <canvas class="pl-hero" aria-label="Laura"></canvas>
       </div>
       <div class="pl-trays">
-        <div class="tray" data-who="V"><span class="tray-name">😈 Quiz</span><div class="slots"></div></div>
-        <div class="tray" data-who="P"><span class="tray-name">💜 Tú</span><div class="slots"></div></div>
+        <div class="tray" data-who="V"><span class="tray-name">${icon('quiz')} Quiz</span><div class="slots"></div></div>
+        <div class="tray" data-who="P"><span class="tray-name">${icon('heart-violet')} Tú</span><div class="slots"></div></div>
       </div>
       <div class="pl-main">
         <canvas class="pl-canvas" width="${LW}" height="${LH}"></canvas>
@@ -86,19 +87,19 @@ export function createPool() {
       <div class="pl-controls">
         <div class="pl-power" aria-label="Potencia"><i></i><em class="pl-thumb"></em><span>POTENCIA</span></div>
         <div class="pl-row">
-          <button class="fine" data-fine="-1" aria-label="Girar a la izquierda">◀</button>
+          <button class="fine" data-fine="-1" aria-label="Girar a la izquierda">${icon('chev-l')}</button>
           <button class="pl-fire" data-act="fire">¡TIRAR!</button>
-          <button class="fine" data-fine="1" aria-label="Girar a la derecha">▶</button>
+          <button class="fine" data-fine="1" aria-label="Girar a la derecha">${icon('chev-r')}</button>
         </div>
       </div>
       <p class="pl-hint"></p>
       <div class="pl-intro">
-        <button class="pi-skip">Saltar ⏭</button>
+        <button class="pi-skip">Saltar ${icon('skip')}</button>
         <div class="pi-char pi-vill"><canvas></canvas></div>
         <div class="pi-bubble" data-speaker="V">
           <b></b><p></p>
-          <i class="pi-next">Toca para continuar ▸</i>
-          <button class="pi-ready" hidden>¡Estoy lista para jugar! 🎱</button>
+          <i class="pi-next">Toca para continuar ${icon('chev-r')}</i>
+          <button class="pi-ready" hidden>¡Estoy lista para jugar! ${icon('pool')}</button>
         </div>
         <div class="pi-char pi-hero"><canvas></canvas></div>
       </div>`;
@@ -194,7 +195,7 @@ export function createPool() {
     const aimOk = human && phase === 'aim';
     const placing = human && phase === 'place';
     fireBtn.disabled = !(aimOk || placing);
-    fireBtn.textContent = placing ? 'LISTO ✔' : '¡TIRAR!';
+    fireBtn.innerHTML = placing ? `LISTO ${icon('check-mark')}` : '¡TIRAR!';
     fineL.disabled = fineR.disabled = !aimOk;
     powerBox.classList.toggle('off', !aimOk);
     hintEl.textContent = placing
@@ -345,7 +346,7 @@ export function createPool() {
     setControls();
     const youWin = match.winner === 'P';
     if (youWin) {
-      banner('¡GANASTE!', 'Mesa limpia 🎱', 4000, 'good');
+      banner('¡GANASTE!', 'Mesa limpia', 4000, 'good');
       say(poolLines.win);
       react(villEl, 'defeated');
       villEl.classList.add('dead');

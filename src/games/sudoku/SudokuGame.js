@@ -2,6 +2,7 @@ import './sudoku.css';
 import { generatePuzzle, canPlace, rowOf, colOf, boxOf } from './generator.js';
 import { sfx } from '../shared/sfx.js';
 import { burst } from '../shared/confetti.js';
+import { icon } from '../../ui/icons.js';
 import { sudokuToasts } from '../../content/story.js';
 
 const HINTS = 3;
@@ -93,11 +94,11 @@ export function createSudoku() {
         </div>
       </div>
       <div class="sdk-tools">
-        <button class="tool" data-act="undo"><span>↶</span><em>Deshacer</em></button>
-        <button class="tool" data-act="erase"><span>⌫</span><em>Borrar</em></button>
-        <button class="tool" data-act="notes"><span>✏️</span><em>Notas</em><u>OFF</u></button>
-        <button class="tool" data-act="hint"><span>💡</span><em>Pista</em><u>${HINTS}</u></button>
-        <button class="tool" data-act="sound"><span>${sfx.muted ? '🔇' : '🔊'}</span><em>Sonido</em></button>
+        <button class="tool" data-act="undo"><span>${icon('undo')}</span><em>Deshacer</em></button>
+        <button class="tool" data-act="erase"><span>${icon('eraser')}</span><em>Borrar</em></button>
+        <button class="tool" data-act="notes"><span>${icon('pencil-notes')}</span><em>Notas</em><u>OFF</u></button>
+        <button class="tool" data-act="hint"><span>${icon('bulb')}</span><em>Pista</em><u>${HINTS}</u></button>
+        <button class="tool" data-act="sound"><span>${icon(sfx.muted ? 'speaker-off' : 'speaker-on')}</span><em>Sonido</em></button>
       </div>
       <div class="sdk-pad">${keyHtml}</div>`;
 
@@ -351,7 +352,7 @@ export function createSudoku() {
 
   function toggleSound() {
     sfx.setMuted(!sfx.muted);
-    btn.sound.firstElementChild.textContent = sfx.muted ? '🔇' : '🔊';
+    btn.sound.firstElementChild.innerHTML = icon(sfx.muted ? 'speaker-off' : 'speaker-on');
     sfx.tap();
   }
 

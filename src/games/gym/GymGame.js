@@ -2,6 +2,7 @@ import './gym.css';
 import { gymLines } from '../../content/story.js';
 import { sfx } from '../shared/sfx.js';
 import { burst } from '../shared/confetti.js';
+import { icon } from '../../ui/icons.js';
 import { drawBody, drawFront, drawHurt, headSprite, outlineLayer, barbell, dumbbell, pullBar, px, HEAD_W, HEAD_H } from './laura.js';
 import { makeScene, LW, LH, FLOOR_Y, CX } from './scene.js';
 
@@ -12,8 +13,8 @@ const CURL_MS = 320;
 
 // Dificultad: la energía baja sola; si llega a cero, Laura se lesiona y pierde una vida.
 const LIVES = 3;
-const DRAIN = { squat: 0.22, pullup: 0.17, curl: 0.22 }; // energía que pierde por segundo al empezar
-const DRAIN_PER_REP = 0.022; // y cada repetición la hace un poco más difícil
+const DRAIN = { squat: 0.31, pullup: 0.24, curl: 0.31 }; // energía que pierde por segundo al empezar (+40 %)
+const DRAIN_PER_REP = 0.031; // y cada repetición la hace un poco más difícil
 const GAIN = { squat: 0.14, curl: 0.16, pullup: 0.55 }; // energía por toque (en dominadas, por recorrido completo del dedo)
 const START_ENERGY = 1;
 const RECOVER_ENERGY = 0.8;
@@ -26,9 +27,9 @@ const ease = (t) => t * t * (3 - 2 * t);
 const lerp = (a, b, t) => a + (b - a) * t;
 
 const EXERCISES = [
-  { id: 'squat', icon: '🍑', title: 'Sentadillas', card: 'Toca el botón lo más rápido que puedas. ¡10 sentadillas y cada vez con más peso! Si te frenas, se te cae la barra encima.' },
-  { id: 'pullup', icon: '🧗', title: 'Dominadas en barra', card: 'Desliza el dedo hacia ARRIBA para subir el mentón por encima de la barra y hacia ABAJO para bajar. ¡10 veces! Si te cansas, te caes de la barra.' },
-  { id: 'curl', icon: '💪', title: 'Curl con mancuernas', card: 'Toca IZQ y DER alternando para subir y bajar cada mancuerna. ¡10 repeticiones! Si te frenas, una mancuerna se te cae en el pie.' },
+  { id: 'squat', icon: 'barbell', title: 'Sentadillas', card: 'Toca el botón lo más rápido que puedas. ¡10 sentadillas y cada vez con más peso! Si te frenas, se te cae la barra encima.' },
+  { id: 'pullup', icon: 'pullbar', title: 'Dominadas en barra', card: 'Desliza el dedo hacia ARRIBA para subir el mentón por encima de la barra y hacia ABAJO para bajar. ¡10 veces! Si te cansas, te caes de la barra.' },
+  { id: 'curl', icon: 'curl', title: 'Curl con mancuernas', card: 'Toca IZQ y DER alternando para subir y bajar cada mancuerna. ¡10 repeticiones! Si te frenas, una mancuerna se te cae en el pie.' },
 ];
 
 export function createGym() {
@@ -74,7 +75,7 @@ export function createGym() {
     root.className = 'gy';
     root.innerHTML = `
       <div class="glass gy-top">
-        <div class="gy-chips">${EXERCISES.map((e) => `<span class="gy-chip">${e.icon}</span>`).join('')}</div>
+        <div class="gy-chips">${EXERCISES.map((e) => `<span class="gy-chip">${icon(e.icon)}</span>`).join('')}</div>
         <div class="gy-title"><b></b><span class="gy-count">0/${REPS}</span></div>
         <div class="gy-dots">${Array.from({ length: REPS }, () => '<i></i>').join('')}</div>
       </div>
@@ -94,7 +95,7 @@ export function createGym() {
           <p class="eyebrow gy-card-step"></p>
           <h2 class="gy-card-title"></h2>
           <p class="gy-card-text"></p>
-          <button class="btn btn-primary" data-act="go">¡A darle! 🔥</button>
+          <button class="btn btn-primary" data-act="go">¡A darle! ${icon('flame')}</button>
         </div>
       </div>`;
     cv = root.querySelector('.gy-canvas');
@@ -178,14 +179,14 @@ export function createGym() {
 
   function updateHud() {
     const e = EXERCISES[ex];
-    titleEl.textContent = `${e.icon} ${e.title}`;
+    titleEl.innerHTML = `${icon(e.icon)} ${e.title}`;
     countEl.textContent = `${reps}/${REPS}`;
     dotsEl.forEach((d, i) => d.classList.toggle('on', i < reps));
     chipEls.forEach((c, i) => {
       c.classList.toggle('done', i < ex);
       c.classList.toggle('now', i === ex);
     });
-    livesEl.innerHTML = Array.from({ length: LIVES }, (_, i) => `<i class="${i < lives ? 'on' : 'off'}">❤️</i>`).join('');
+    livesEl.innerHTML = Array.from({ length: LIVES }, (_, i) => `<i class="${i < lives ? 'on' : 'off'}">${icon('heart')}</i>`).join('');
   }
 
   /* ---------- energía y lesión ---------- */
@@ -225,7 +226,7 @@ export function createGym() {
     sfx.cushion(520);
     sfx.pocket();
     sparkles(CX, FLOOR_Y - 40, ['#ffffff', '#ffd166', '#ff6b81']);
-    floatText('¡AUCH! 💥', 'bad');
+    floatText('¡AUCH!', 'bad');
   }
 
   function afterFail() {
@@ -253,7 +254,7 @@ export function createGym() {
     phase = 'card';
     ctx.hold(true);
     const e = EXERCISES[ex];
-    cardEl.querySelector('.gy-card-icon').textContent = e.icon;
+    cardEl.querySelector('.gy-card-icon').innerHTML = icon(e.icon);
     cardEl.querySelector('.gy-card-step').textContent = `Ejercicio ${ex + 1} de ${EXERCISES.length}`;
     cardEl.querySelector('.gy-card-title').textContent = e.title;
     cardEl.querySelector('.gy-card-text').textContent = e.card;
@@ -294,11 +295,11 @@ export function createGym() {
   function buildControls() {
     const id = EXERCISES[ex].id;
     if (id === 'squat') {
-      controlsEl.innerHTML = '<button class="gy-big pink" data-act="squat"><span>🍑</span><b>¡SENTADILLA!</b><small>toca rápido, rápido, rápido</small></button>';
+      controlsEl.innerHTML = `<button class="gy-big pink" data-act="squat"><span>${icon('barbell')}</span><b>¡SENTADILLA!</b><small>toca rápido, rápido, rápido</small></button>`;
     } else if (id === 'pullup') {
-      controlsEl.innerHTML = '<div class="gy-swipe"><span class="arrow up">⬆</span><div><b>DESLIZA</b><small>arriba para subir · abajo para bajar</small></div><span class="arrow down">⬇</span></div>';
+      controlsEl.innerHTML = `<div class="gy-swipe"><span class="arrow up">${icon('arrow-up')}</span><div><b>DESLIZA</b><small>arriba para subir · abajo para bajar</small></div><span class="arrow down">${icon('arrow-down')}</span></div>`;
     } else {
-      controlsEl.innerHTML = '<div class="gy-pair"><button class="gy-big pink" data-arm="L"><span>💪</span><b>IZQ</b></button><button class="gy-big violet" data-arm="R"><span>💪</span><b>DER</b></button></div>';
+      controlsEl.innerHTML = `<div class="gy-pair"><button class="gy-big pink" data-arm="L"><span>${icon('curl')}</span><b>IZQ</b></button><button class="gy-big violet" data-arm="R"><span>${icon('curl')}</span><b>DER</b></button></div>`;
     }
   }
 

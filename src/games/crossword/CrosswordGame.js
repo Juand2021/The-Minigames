@@ -3,6 +3,7 @@ import { layout } from '../../content/crosswordLayout.js';
 import { crosswordToasts } from '../../content/story.js';
 import { sfx } from '../shared/sfx.js';
 import { burst } from '../shared/confetti.js';
+import { icon } from '../../ui/icons.js';
 
 const HINTS = 5;
 const ROWS = ['QWERTYUIOP', 'ASDFGHJKL', 'ZXCVBNM'];
@@ -86,7 +87,7 @@ export function createCrossword() {
       (row, n) =>
         `<div class="kb-row">${[...row]
           .map((k, j) => `<button class="cwk" data-k="${k}" style="--d:${(n * 10 + j) * 18}ms">${k}</button>`)
-          .join('')}${n === 2 ? '<button class="cwk wide" data-act="back" aria-label="Borrar">⌫</button>' : ''}</div>`,
+          .join('')}${n === 2 ? `<button class="cwk wide" data-act="back" aria-label="Borrar">${icon('backspace')}</button>` : ''}</div>`,
     ).join('');
 
     const list = (dir) =>
@@ -98,16 +99,16 @@ export function createCrossword() {
     root.innerHTML = `
       <div class="cw-toast" aria-live="polite"></div>
       <div class="cw-clue">
-        <button class="cw-nav" data-act="prev" aria-label="Pista anterior">‹</button>
+        <button class="cw-nav" data-act="prev" aria-label="Pista anterior">${icon('chev-l')}</button>
         <div class="cw-clue-body"><small></small><p></p></div>
-        <button class="cw-nav" data-act="next" aria-label="Pista siguiente">›</button>
+        <button class="cw-nav" data-act="next" aria-label="Pista siguiente">${icon('chev-r')}</button>
       </div>
       <div class="cw-main"><div class="cw-grid"><div class="cw-cursor"></div>${cellsHtml}</div></div>
       <div class="cw-tools">
-        <button class="cwt" data-act="list"><span>📋</span><em>Pistas</em></button>
-        <button class="cwt" data-act="check"><span>✔️</span><em>Revisar</em></button>
-        <button class="cwt" data-act="reveal"><span>💡</span><em>Letra</em><u>${HINTS}</u></button>
-        <button class="cwt" data-act="sound"><span>${sfx.muted ? '🔇' : '🔊'}</span><em>Sonido</em></button>
+        <button class="cwt" data-act="list"><span>${icon('clipboard')}</span><em>Pistas</em></button>
+        <button class="cwt" data-act="check"><span>${icon('check')}</span><em>Revisar</em></button>
+        <button class="cwt" data-act="reveal"><span>${icon('bulb')}</span><em>Letra</em><u>${HINTS}</u></button>
+        <button class="cwt" data-act="sound"><span>${icon(sfx.muted ? 'speaker-off' : 'speaker-on')}</span><em>Sonido</em></button>
       </div>
       <div class="cw-kb">${kb}</div>
       <div class="cw-sheet" hidden>
@@ -335,7 +336,7 @@ export function createCrossword() {
 
   function toggleSound() {
     sfx.setMuted(!sfx.muted);
-    btn.sound.firstElementChild.textContent = sfx.muted ? '🔇' : '🔊';
+    btn.sound.firstElementChild.innerHTML = icon(sfx.muted ? 'speaker-off' : 'speaker-on');
     sfx.tap();
   }
 

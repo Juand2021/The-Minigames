@@ -771,3 +771,25 @@ h3 {
     transform: scale(0.9) translateY(10px);
   }
 }
+
+/* ---------- iconos ilustrados ---------- */
+.ic {
+  width: 1.15em;
+  height: 1.15em;
+  display: inline-block;
+  vertical-align: -0.2em;
+  flex: none;
+  overflow: visible;
+}
+.orb .ic {
+  width: 1.3em;
+  height: 1.3em;
+  vertical-align: middle;
+  filter: drop-shadow(0 3px 5px rgba(8, 0, 22, 0.45));
+}
+.btn .ic {
+  width: 1.05em;
+  height: 1.05em;
+  vertical-align: -0.16em;
+  margin-left: 0.15em;
+}

@@ -226,7 +226,7 @@ export class Survival {
     this.emit('hurt', { amount, cause });
     if (p.hp <= 0) {
       p.hp = 0;
-      this.lose(cause === 'explosión' ? 'Un creeper te hizo volar por los aires 💥' : 'Los mobs te derrotaron esta noche 🧟');
+      this.lose(cause === 'explosión' ? 'Un creeper te hizo volar por los aires' : 'Los mobs te derrotaron esta noche');
     }
   }
 
@@ -513,7 +513,7 @@ export class Survival {
       this.juan.lost = true;
       this.juan.carriedBy = null;
       this.emit('escape', { what: 'juan' });
-      this.lose('Se llevaron al capibara Juan 😭🦫');
+      this.lose('Se llevaron al capibara Juan');
     } else if (m.carry === 'loko') {
       this.emit('escape', { what: 'loko' });
     }

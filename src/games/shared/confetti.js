@@ -57,9 +57,17 @@ export function burst(container, { count = 140, duration = 3200 } = {}) {
       g.rotate(p.rot);
       g.fillStyle = p.color;
       if (p.heart) {
-        g.font = `${p.size}px serif`;
-        g.textAlign = 'center';
-        g.fillText('💜', 0, 0);
+        // corazón violeta dibujado a mano
+        const k = p.size / 16;
+        g.scale(k, k);
+        g.fillStyle = '#9b6bff';
+        g.beginPath();
+        g.moveTo(0, 7);
+        g.bezierCurveTo(-12, -1, -8, -10, 0, -5);
+        g.bezierCurveTo(8, -10, 12, -1, 0, 7);
+        g.fill();
+        g.fillStyle = 'rgba(255,255,255,0.55)';
+        g.fillRect(-6, -5, 3, 2);
       } else {
         g.fillRect(-p.size / 2, -p.size / 4, p.size, p.size / 2);
       }

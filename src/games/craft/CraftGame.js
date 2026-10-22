@@ -8,6 +8,7 @@ import { BLUEPRINTS, blueprintSize, makeSite, scoreBuild, blueprintCells, paint 
 import { centerX, centerY } from './engine/physics.js';
 import { sfx } from '../shared/sfx.js';
 import { burst } from '../shared/confetti.js';
+import { icon as ic } from '../../ui/icons.js';
 import {
   maincraIntro,
   maincraIntroButton,
@@ -80,25 +81,25 @@ export function createCraft() {
         <div class="mc-btitle"><b></b><span class="mc-stars"></span></div>
         <div class="mc-bar"><i></i><span></span></div>
         <div class="mc-bbtns">
-          <button class="mc-btn" data-act="plan">👁 Plano</button>
-          <button class="mc-btn mc-primary" data-act="finish">✔ Terminar</button>
+          <button class="mc-btn" data-act="plan">${ic('eye')} Plano</button>
+          <button class="mc-btn mc-primary" data-act="finish">${ic('flag')} Terminar</button>
         </div>
       </div>
-      <button class="mc-sound mc-btn" aria-label="Sonido">${sfx.muted ? '🔇' : '🔊'}</button>
+      <button class="mc-sound mc-btn" aria-label="Sonido">${ic(sfx.muted ? 'speaker-off' : 'speaker-on')}</button>
       <div class="mc-title"><strong></strong><span></span></div>
       <div class="mc-chat"></div>
       <div class="mc-hotbar"></div>
       <div class="mc-controls" hidden>
         <div class="mc-joy"><i></i></div>
         <div class="mc-actions">
-          <button class="mc-act mc-jump" aria-label="Saltar">⤒</button>
-          <button class="mc-act mc-attack" aria-label="Atacar">⚔️</button>
+          <button class="mc-act mc-jump" aria-label="Saltar">${ic('arrow-up')}</button>
+          <button class="mc-act mc-attack" aria-label="Atacar">${ic('sword')}</button>
         </div>
       </div>
       <div class="mc-dialog" hidden>
-        <button class="mc-skip mc-btn">Saltar ⏭</button>
+        <button class="mc-skip mc-btn">Saltar ${ic('skip')}</button>
         <div class="mc-stagechar"><canvas></canvas></div>
-        <div class="mc-dbox"><b></b><p></p><i class="mc-next">Toca para continuar ▸</i><button class="mc-dok mc-btn mc-primary" hidden></button></div>
+        <div class="mc-dbox"><b></b><p></p><i class="mc-next">Toca para continuar ${ic('chev-r')}</i><button class="mc-dok mc-btn mc-primary" hidden></button></div>
       </div>
       <div class="mc-card" hidden><div class="mc-cardbox"></div></div>`;
     const q = (s) => root.querySelector(s);
@@ -320,7 +321,7 @@ export function createCraft() {
       els.hotbar.innerHTML =
         bp.palette
           .map((id) => `<button class="mc-slot ${id === selectedBuild ? 'sel' : ''}" data-id="${id}" title="${BLOCKS[id].name}"><img src="${iconOf(id)}" alt=""><span>${BLOCKS[id].name}</span></button>`)
-          .join('') + `<button class="mc-slot mc-erase ${selectedBuild === 'erase' ? 'sel' : ''}" data-id="erase"><b>⛏️</b><span>Quitar</span></button>`;
+          .join('') + `<button class="mc-slot mc-erase ${selectedBuild === 'erase' ? 'sel' : ''}" data-id="erase"><b>${ic('eraser')}</b><span>Quitar</span></button>`;
     } else els.hotbar.innerHTML = '';
   }
 
@@ -339,11 +340,11 @@ export function createCraft() {
     loot += `<img class="juan ${sim.juan.lost ? 'gone' : sim.juan.carriedBy ? 'danger' : ''}" src="${els.juanImg}" alt="Juan">`;
     els.loot.innerHTML = loot;
     if (sim.phase === 'prep') {
-      els.wave.textContent = `☀️ ${Math.ceil(PREP_TIME - sim.phaseT)} s`;
+      els.wave.innerHTML = `${ic('sun')} ${Math.ceil(PREP_TIME - sim.phaseT)} s`;
       els.ready.hidden = false;
     } else {
       els.ready.hidden = true;
-      els.wave.textContent = sim.phase === 'dawn' || sim.result === 'won' ? '☀️ Amanecer' : `🌙 Oleada ${sim.wave}/${WAVES.length}`;
+      els.wave.innerHTML = sim.phase === 'dawn' || sim.result === 'won' ? `${ic('sun')} Amanecer` : `${ic('moon')} Oleada ${sim.wave}/${WAVES.length}`;
     }
   }
 
@@ -418,7 +419,7 @@ export function createCraft() {
           else if (e.what === 'boom') say(chat.stealBoom(e.left));
           else {
             say(chat.stealJuan);
-            title('¡Se llevan a Juan!', 'Rescátalo 🦫', 2200);
+            title('¡Se llevan a Juan!', 'Rescátalo', 2200);
           }
           break;
         case 'escape':
@@ -447,7 +448,7 @@ export function createCraft() {
           rd.burst(e.x, e.y, 'fire');
           break;
         case 'dawn':
-          title('¡Amaneció!', 'Sobreviviste a la noche ☀️', 3000);
+          title('¡Amaneció!', 'Sobreviviste a la noche', 3000);
           say(chat.dawn);
           audio.dawn();
           break;
@@ -471,7 +472,7 @@ export function createCraft() {
     const stop = burst(root);
     later(stop, 3500);
     await card({
-      icon: '🌅',
+      icon: ic('sunrise'),
       heading: survivalWin.title,
       body: `<p>${survivalWin.line(sim.lokos, sim.kills)}</p>`,
       buttons: [{ label: survivalWin.button, primary: true }],
@@ -484,7 +485,7 @@ export function createCraft() {
     audio.music(false);
     await new Promise((r) => later(r, 1100));
     await card({
-      icon: '💀',
+      icon: ic('skull'),
       heading: survivalLose.title,
       body: `<p>${reason}</p>`,
       buttons: [{ label: survivalLose.button, primary: true }],
@@ -622,10 +623,10 @@ export function createCraft() {
     }
     const lastOne = buildIndex === BLUEPRINTS.length - 1;
     await card({
-      icon: '🏗️',
+      icon: ic('bricks'),
       heading: bp.title,
       body: `<div class="mc-starrow">${starsHtml}</div><p class="mc-score">${s.score} pts · ${Math.round(s.accuracy * 100)}% de parecido</p><p>${buildComments[s.stars]}</p>`,
-      buttons: [{ label: lastOne ? 'Ver resultado final' : 'Siguiente construcción ▶', primary: true }],
+      buttons: [{ label: lastOne ? 'Ver resultado final' : `Siguiente construcción ${ic('chev-r')}`, primary: true }],
     });
     if (!lastOne) return startBuild(buildIndex + 1);
     finalCard();
@@ -639,7 +640,7 @@ export function createCraft() {
     const stop = burst(root);
     later(stop, 4000);
     await card({
-      icon: '🏆',
+      icon: ic('trophy'),
       heading: buildFinal.title,
       body: `<p>${buildFinal.line(total, stars)}</p>`,
       buttons: [{ label: buildFinal.button, primary: true }],
@@ -712,7 +713,7 @@ export function createCraft() {
 
     els.sound.addEventListener('click', () => {
       sfx.setMuted(!sfx.muted);
-      els.sound.textContent = sfx.muted ? '🔇' : '🔊';
+      els.sound.innerHTML = ic(sfx.muted ? 'speaker-off' : 'speaker-on');
       audio.unlock();
     });
 
