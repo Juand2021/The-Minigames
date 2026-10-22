@@ -21,7 +21,7 @@ import {
 } from '../../content/maincra.js';
 
 const NAMES = { sofia: 'Sofía', juan: 'Juan', zombie: 'Zombi', creeper: 'Creeper' };
-const PORTRAIT = { sofia: 'sofia0', juan: 'juan0', zombie: 'zombie0', creeper: 'creeper0' };
+const PORTRAIT = { sofia: 'sofiaPortrait', juan: 'juanPortrait', zombie: 'zombie0', creeper: 'creeper0' };
 const STEP = 1 / 60;
 
 // Captura el dedo sobre el elemento; algunos navegadores lanzan error con punteros ya liberados.
@@ -201,15 +201,17 @@ export function createCraft() {
         const last = i === lines.length - 1;
         d.dataset.who = l.who;
         els.dname.textContent = NAMES[l.who];
-        const spr = rd.sprites[PORTRAIT[l.who]];
+        const spr = rd.sprites[l.scene || PORTRAIT[l.who]];
         const cvs = els.dcanvas;
         cvs.width = spr.width;
         cvs.height = spr.height;
         const g = cvs.getContext('2d');
         g.imageSmoothingEnabled = false;
         g.drawImage(spr, 0, 0);
-        cvs.style.width = `${spr.width * 5}px`;
-        cvs.style.height = `${spr.height * 5}px`;
+        // escala entera que quepa en el escenario
+        const zoom = Math.max(2, Math.floor(Math.min(230 / spr.height, 300 / spr.width)));
+        cvs.style.width = `${spr.width * zoom}px`;
+        cvs.style.height = `${spr.height * zoom}px`;
         els.dchar.classList.remove('in');
         void els.dchar.offsetWidth;
         els.dchar.classList.add('in');

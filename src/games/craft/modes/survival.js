@@ -7,7 +7,6 @@ export const WAVES = [
   ['zombie', 'zombie', 'zombie'],
   ['zombie', 'zombie', 'creeper', 'zombie'],
   ['zombie', 'skeleton', 'zombie', 'creeper', 'zombie'],
-  ['zombie', 'creeper', 'skeleton', 'zombie', 'zombie', 'creeper'],
   ['zombie', 'zombie', 'skeleton', 'creeper', 'zombie', 'skeleton', 'creeper', 'zombie'],
 ];
 

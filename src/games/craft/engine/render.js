@@ -87,7 +87,10 @@ export class Renderer {
   sprite(name, mode) {
     if (!mode) return this.sprites[name];
     const key = `${name}:${mode}`;
-    if (!this.tinted.has(key)) this.tinted.set(key, tint(this.sprites[name], mode === 'hurt' ? '#ff1a1a' : '#000000', mode === 'hurt' ? 0.5 : 0.6));
+    if (!this.tinted.has(key)) {
+      const t = { hurt: ['#ff1a1a', 0.5], glow: ['#fff6c8', 1] }[mode] || ['#000000', 0.6];
+      this.tinted.set(key, tint(this.sprites[name], t[0], t[1]));
+    }
     return this.tinted.get(key);
   }
 
@@ -374,8 +377,13 @@ export class Renderer {
     } else g.drawImage(s, dx, dy, sw, sh);
     g.globalAlpha = 1;
     if (e.carry) {
+      // el botín va encima de la cabeza, con borde claro para que se vea sobre cualquier fondo
       const c = this.sprites[e.carry];
-      g.drawImage(c, Math.round(dx + sw / 2 - c.width / 2), dy - c.height - 2 + Math.round(Math.sin(this.time * 8)));
+      const glow = this.sprite(e.carry, 'glow');
+      const cx = Math.round(dx + sw / 2 - c.width / 2);
+      const cy = dy - c.height + 1 + Math.round(Math.sin(this.time * 8));
+      for (const [ox, oy] of [[-1, 0], [1, 0], [0, -1], [0, 1]]) g.drawImage(glow, cx + ox, cy + oy);
+      g.drawImage(c, cx, cy);
     }
     if (e.hpBar !== undefined && e.hpBar < 1) {
       g.fillStyle = 'rgba(0,0,0,0.6)';

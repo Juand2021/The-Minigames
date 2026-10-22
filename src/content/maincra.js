@@ -1,7 +1,9 @@
 // Textos de Maincra (nivel 4). who: 'sofia' | 'juan' | 'zombie' | 'creeper'
+// scene: 'chestScene' muestra el cofre abierto en lugar del retrato.
 
 export const maincraIntro = [
-  { who: 'sofia', text: '¡Mira, Juan! Llenamos el cofre con 5 Four Lokos para esta noche 🥫' },
+  { who: 'sofia', scene: 'chestScene', text: '¡Mira, Juan! Llenamos el cofre con 5 Four Lokos para esta noche 🥫' },
+  { who: 'sofia', scene: 'chestScene', text: 'Y también hay pastel, pan, manzanas y galletas… pero lo más valioso son los Four Lokos 🎂🍎' },
   { who: 'juan', text: '…*mastica pasto con su mandarina en la cabeza* 🍊🦫' },
   { who: 'zombie', text: 'Grrr… Fooour… Lookooos… 🧟' },
   { who: 'creeper', text: 'Ssssssss… 💚' },
@@ -26,7 +28,7 @@ export const chat = {
   recover: (left) => `¡Recuperaste un Four Loko! (${left}) 🥫💜`,
   lokoDropped: '¡Soltó el Four Loko! Recógelo antes de que vuelvan 🥫',
   juanSaved: '¡Juan está a salvo! 🦫💜',
-  ironSword: '¡Espada de hierro! ⚔️ Ahora pegas más fuerte',
+  ironSword: '¡Espada encantada! ⚔️✨ Ahora pegas más fuerte',
   dawn: '¡Amaneció! Los mobs arden con el sol ☀️🔥',
 };
 

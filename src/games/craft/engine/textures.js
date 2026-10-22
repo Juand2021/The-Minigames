@@ -210,9 +210,9 @@ const px = (g, x, y, w, h, c) => {
   g.fillRect(x, y, w, h);
 };
 
-// Humanoide de 20x30 mirando a la derecha. pose: { frame: 0|1|2, swing: 0..1, tool }
+// Humanoide de 30 px de alto mirando a la derecha. pose: { frame: 0|1|2, swing: 0..1, tool, o }
 function humanoid(g, c, pose) {
-  const o = 5; // desplazamiento para dejar sitio a la herramienta
+  const o = pose.o ?? 5; // desplazamiento para dejar sitio a la herramienta
   const legA = pose.frame === 1 ? 1 : 0;
   const legB = pose.frame === 2 ? 1 : 0;
   // piernas
@@ -230,6 +230,11 @@ function humanoid(g, c, pose) {
     px(g, o, 0, 9, 2, c.hair);
     px(g, o, 0, 3, 8, c.hair);
     if (c.longHair) px(g, o - 1, 2, 3, 13, c.hair);
+    if (c.bangs) {
+      // mechones rubios al frente de la cara
+      px(g, o + 8, 1, 1, 6, c.bangs);
+      px(g, o + 6, 1, 1, 2, c.bangs);
+    }
   }
   if (c.face) c.face(g, o);
   else {
@@ -245,27 +250,47 @@ function humanoid(g, c, pose) {
     const reach = Math.round(4 + pose.swing * 5);
     px(g, o + 4, 9, reach, 3, c.shirt);
     px(g, o + 4 + reach, 9, 2, 3, c.skin);
-    drawTool(g, o + 5 + reach, 10, pose.tool, pose.swing);
+    drawTool(g, o + 5 + reach, 10, pose.tool);
   } else {
     px(g, o + 3, 9, 3, 9, c.shirt);
     px(g, o + 3, 17, 3, 2, c.skin);
+    if (c.holdSword) drawTool(g, o + 4, 17, 'sword'); // siempre con la espada en la mano
   }
 }
 
-function drawTool(g, x, y, tool, s) {
+// Espada de diamante clásica (diagonal, punta arriba a la derecha). La empuñadura queda en (1, 8).
+const SWORD = [
+  '.......KKK',
+  '......KWCK',
+  '.....KWcCK',
+  '....KWcCK.',
+  '.K.KWcCK..',
+  '.KKdcCK...',
+  '..KdcK....',
+  '.KhKdK....',
+  'KhK.KK....',
+  'KK........',
+];
+const SWORD_COL = { K: '#0e1f22', W: '#e9fffb', C: '#2fe0c4', c: '#8ff7e3', d: '#167a6c', h: '#6b4a2a' };
+
+function drawTool(g, x, y, tool) {
   if (tool === 'pick') {
     px(g, x - 1, y - 6, 1, 8, '#6b5131');
-    px(g, x - 4, y - 7, 7, 2, '#9a9a9a');
-    px(g, x - 4, y - 6, 1, 2, '#9a9a9a');
-    px(g, x + 2, y - 6, 1, 2, '#9a9a9a');
+    px(g, x - 4, y - 7, 7, 2, '#2fe0c4');
+    px(g, x - 4, y - 6, 1, 2, '#2fe0c4');
+    px(g, x + 2, y - 6, 1, 2, '#2fe0c4');
+    px(g, x - 4, y - 8, 7, 1, '#0e1f22');
     return;
   }
-  const blade = tool === 'iron' ? '#e8e8e8' : '#bdbdbd';
-  // espada inclinada hacia delante
-  const len = 7;
-  for (let i = 0; i < len; i++) px(g, x + i, y - 1 - Math.round(i * (1 - s * 0.6)), 2, 1, blade);
-  px(g, x - 1, y - 1, 1, 3, '#6b5131');
-  px(g, x, y, 1, 1, '#3a2a18');
+  const enchanted = tool === 'iron'; // tras recoger hierro: espada encantada (brillo morado)
+  SWORD.forEach((row, ry) =>
+    [...row].forEach((ch, rx) => {
+      if (ch === '.') return;
+      let col = SWORD_COL[ch];
+      if (enchanted && (ch === 'C' || ch === 'c') && (rx + ry) % 3 === 0) col = '#c38bff';
+      px(g, x - 1 + rx, y - 8 + ry, 1, 1, col);
+    }),
+  );
 }
 
 function shadeHex(c, k) {
@@ -275,8 +300,10 @@ function shadeHex(c, k) {
 
 const SOFIA = {
   skin: '#f1c9a5',
-  hair: '#3d2418',
+  hair: '#17131c', // pelo negro
+  bangs: '#f2d16b', // mechones rubios al frente
   longHair: true,
+  holdSword: true,
   shirt: '#8a55e0',
   detail: '#a678ee',
   pants: '#2d3a6b',
@@ -309,7 +336,7 @@ export function makeCharacterSprites() {
     s[`zombie${frame}`] = sprite(22, 30, (g) => humanoid(g, ZOMBIE, { frame, swing: 0 }));
   }
   for (const tool of ['sword', 'iron', 'pick']) {
-    s[`sofiaSwing_${tool}`] = sprite(22, 30, (g) => humanoid(g, SOFIA, { frame: 0, swing: 1, tool }));
+    s[`sofiaSwing_${tool}`] = sprite(34, 30, (g) => humanoid(g, SOFIA, { frame: 0, swing: 1, tool, o: 11 }));
   }
 
   // Esqueleto: huesos finos y arco
@@ -406,7 +433,190 @@ export function makeCharacterSprites() {
     px(g, 1, 1, 3, 3, '#e8ff7a');
     px(g, 2, 2, 1, 1, '#ffffff');
   });
+
+  // Solo para las cinemáticas: versiones con más detalle
+  s.sofiaPortrait = sofiaPortrait();
+  s.juanPortrait = juanPortrait();
+  s.chestScene = chestScene(s.loko);
   return s;
+}
+
+/* ---------------- retratos de las cinemáticas ---------------- */
+function ellipse(g, cx, cy, rx, ry, color) {
+  g.fillStyle = color;
+  for (let y = Math.floor(cy - ry); y <= Math.ceil(cy + ry); y++)
+    for (let x = Math.floor(cx - rx); x <= Math.ceil(cx + rx); x++)
+      if (((x + 0.5 - cx) / rx) ** 2 + ((y + 0.5 - cy) / ry) ** 2 <= 1) g.fillRect(x, y, 1, 1);
+}
+
+// Contorno oscuro de 1 px alrededor de todo lo dibujado (estilo pixel-art)
+function outline(c, color = [20, 14, 24]) {
+  const g = c.getContext('2d');
+  const img = g.getImageData(0, 0, c.width, c.height);
+  const d = img.data;
+  const solid = (x, y) => x >= 0 && y >= 0 && x < c.width && y < c.height && d[(y * c.width + x) * 4 + 3] > 0;
+  const add = [];
+  for (let y = 0; y < c.height; y++)
+    for (let x = 0; x < c.width; x++)
+      if (!solid(x, y) && (solid(x - 1, y) || solid(x + 1, y) || solid(x, y - 1) || solid(x, y + 1))) add.push([x, y]);
+  for (const [x, y] of add) d.set([...color, 255], (y * c.width + x) * 4);
+  g.putImageData(img, 0, 0);
+  return c;
+}
+
+function sofiaPortrait() {
+  return outline(
+    sprite(32, 40, (g) => {
+      const hair = '#17131c';
+      const hairHi = '#3b3448';
+      const blond = '#f2d16b';
+      const blondSh = '#c9a443';
+      const skin = '#f3cfae';
+      const skinSh = '#e2b08f';
+      // pelo largo por detrás
+      ellipse(g, 16, 14, 12, 12.5, hair);
+      px(g, 4, 14, 24, 22, hair);
+      px(g, 7, 6, 2, 3, hairHi);
+      px(g, 21, 5, 3, 2, hairHi);
+      // sudadera morada
+      ellipse(g, 16, 39, 14, 8, '#8a55e0');
+      px(g, 4, 34, 24, 6, '#8a55e0');
+      px(g, 4, 36, 3, 4, '#6b3fc4');
+      px(g, 25, 36, 3, 4, '#6b3fc4');
+      px(g, 10, 31, 12, 3, '#a678ee'); // capucha
+      px(g, 13, 33, 1, 5, '#f2f2f2'); // cordones
+      px(g, 18, 33, 1, 5, '#f2f2f2');
+      // cuello y cara
+      px(g, 13, 26, 6, 6, skinSh);
+      ellipse(g, 16, 18, 7.5, 9, skin);
+      px(g, 21, 13, 2, 11, skinSh);
+      // flequillo negro con raya al lado
+      ellipse(g, 16, 9, 9, 5, hair);
+      px(g, 9, 9, 4, 3, hair);
+      px(g, 19, 9, 5, 2, hair);
+      // mechones rubios al frente, enmarcando la cara
+      for (let y = 9; y < 31; y++) {
+        const drift = y > 22 ? 1 : 0; // caen rectos y se abren un poco al final
+        px(g, 8 - drift, y, 2, 1, y % 5 === 0 ? blondSh : blond);
+        px(g, 22 + drift, y, 2, 1, y % 5 === 2 ? blondSh : blond);
+      }
+      px(g, 10, 8, 2, 1, blond);
+      px(g, 20, 8, 2, 1, blond);
+      // cejas y ojos
+      px(g, 10, 14, 4, 1, '#17131c');
+      px(g, 18, 14, 4, 1, '#17131c');
+      for (const ex of [10, 18]) {
+        px(g, ex, 16, 4, 3, '#ffffff');
+        px(g, ex + 1, 16, 2, 3, '#4a2a1a');
+        px(g, ex + 1, 17, 2, 2, '#1b0f0a');
+        px(g, ex + 1, 16, 1, 1, '#ffffff');
+        px(g, ex, 15, 4, 1, '#17131c'); // pestañas
+      }
+      // rubor, nariz y sonrisa
+      px(g, 9, 20, 3, 1, '#f29aa6');
+      px(g, 20, 20, 3, 1, '#f29aa6');
+      px(g, 15, 20, 2, 1, skinSh);
+      px(g, 13, 23, 6, 1, '#b5484f');
+      px(g, 12, 22, 1, 1, '#b5484f');
+      px(g, 19, 22, 1, 1, '#b5484f');
+      px(g, 14, 24, 4, 1, '#e98a8f');
+    }),
+  );
+}
+
+function juanPortrait() {
+  return outline(
+    sprite(44, 32, (g) => {
+      const body = '#9a6a3d';
+      const back = '#7d5530';
+      const belly = '#b88552';
+      const dark = '#5b3c22';
+      // patitas
+      for (const lx of [8, 14, 25, 31]) px(g, lx, 25, 4, 5, dark);
+      // cuerpo redondito
+      ellipse(g, 19, 19, 15, 9, body);
+      ellipse(g, 17, 14, 12, 4, back);
+      ellipse(g, 20, 23, 10, 4, belly);
+      // pelaje
+      const r = rng(9);
+      for (let i = 0; i < 40; i++) {
+        const x = 6 + Math.floor(r() * 26);
+        const y = 12 + Math.floor(r() * 12);
+        px(g, x, y, 1, 1, r() < 0.5 ? back : '#a87545');
+      }
+      // cabeza y hocico
+      ellipse(g, 33, 15, 8, 7, body);
+      ellipse(g, 39, 17, 4.5, 4, '#7a5232');
+      px(g, 41, 15, 2, 2, '#2a1a0e'); // nariz
+      px(g, 39, 20, 3, 1, '#4a2e18'); // boca
+      // oreja
+      ellipse(g, 28, 9, 2.2, 2, dark);
+      // ojo tierno con brillo
+      px(g, 33, 12, 3, 3, '#1a1008');
+      px(g, 33, 12, 1, 1, '#ffffff');
+      px(g, 35, 14, 1, 1, '#5a4030');
+      px(g, 31, 16, 3, 1, '#f2909a'); // rubor
+      // mandarina en la cabeza
+      ellipse(g, 31, 5, 4, 3.6, '#ff9a1f');
+      px(g, 29, 3, 2, 1, '#ffc56b');
+      px(g, 31, 0, 1, 2, '#3f8f2a');
+      px(g, 32, 0, 3, 1, '#5cbf4c');
+    }),
+  );
+}
+
+// Cofre abierto con los Four Lokos y otras cosas ricas (solo en la intro)
+function chestScene(loko) {
+  return outline(
+    sprite(52, 44, (g) => {
+      const wood = '#a86f34';
+      const woodDk = '#7d4f22';
+      const edge = '#3d2a14';
+      // tapa abierta (vista por dentro)
+      px(g, 4, 2, 44, 12, edge);
+      px(g, 5, 3, 42, 10, '#5a3a1c');
+      for (let x = 9; x < 47; x += 8) px(g, x, 3, 1, 10, '#4a2e15');
+      // brillo dorado que sale del cofre
+      g.fillStyle = 'rgba(255,224,120,0.55)';
+      for (let i = 0; i < 9; i++) g.fillRect(8 + i * 4, 6 + (i % 3), 1, 6 - (i % 3));
+      // interior
+      px(g, 4, 14, 44, 8, '#2c1a0b');
+      // Four Lokos de pie (fila de atrás)
+      for (let i = 0; i < 5; i++) g.drawImage(loko, 7 + i * 6, 9 - (i % 2));
+      // pastel (como el de los bloques: crema blanca con cerezas)
+      px(g, 36, 11, 11, 3, '#fbfbf5');
+      px(g, 36, 14, 11, 6, '#c47a3d');
+      px(g, 36, 14, 11, 1, '#f2e6d0');
+      for (const cx of [38, 41, 44]) px(g, cx, 10, 1, 1, '#e3262f');
+      px(g, 37, 12, 1, 2, '#f2e6d0');
+      // pan, manzana y galleta delante
+      px(g, 6, 18, 8, 3, '#d49a4a');
+      px(g, 7, 17, 6, 1, '#e8b86a');
+      ellipse(g, 19, 18.5, 2.5, 2.5, '#d8282f');
+      px(g, 19, 15, 1, 2, '#5b3c22');
+      px(g, 20, 15, 2, 1, '#4caf3a');
+      px(g, 18, 17, 1, 1, '#ff8a8f');
+      ellipse(g, 27, 19, 2.6, 2.2, '#b9793e');
+      px(g, 26, 18, 1, 1, '#4a2a12');
+      px(g, 28, 20, 1, 1, '#4a2a12');
+      // caja del cofre
+      px(g, 2, 21, 48, 21, edge);
+      px(g, 3, 22, 46, 19, wood);
+      for (let y = 26; y < 41; y += 5) px(g, 3, y, 46, 1, woodDk);
+      px(g, 3, 22, 46, 2, '#c48a45');
+      // cerradura plateada
+      px(g, 23, 21, 6, 7, '#2a2a2a');
+      px(g, 24, 22, 4, 5, '#d8d8d8');
+      px(g, 25, 24, 2, 2, '#7a7a7a');
+      // destellos
+      g.fillStyle = '#fff6b0';
+      for (const [x, y] of [[3, 6], [48, 9], [33, 4], [15, 3]]) {
+        g.fillRect(x, y, 1, 1);
+        g.fillRect(x - 1, y + 1, 3, 1);
+        g.fillRect(x, y + 2, 1, 1);
+      }
+    }),
+  );
 }
 
 // Versión teñida (daño en rojo)
