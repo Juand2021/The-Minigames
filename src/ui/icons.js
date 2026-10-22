@@ -375,15 +375,38 @@ const ICONS = {
   play: `<path d="M16 8L56 32L16 56Z" fill="currentColor" stroke="currentColor" stroke-width="6" stroke-linejoin="round"/>`,
 };
 
+// Glifos de interfaz (24x24): trazo grueso en currentColor con relleno tenue. Se usan en botones, fichas y estados.
+const S = 'stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"';
+const F = 'fill="currentColor" fill-opacity=".22"';
+const GLYPHS = {
+  timer: `<circle cx="12" cy="13.6" r="8" ${F} ${S}/><path d="M12 8.6V13.6L15.4 15.6" fill="none" ${S}/><path d="M9.4 2.9H14.6M18.6 5.4L20 4" fill="none" ${S}/>`,
+  target: `<circle cx="12" cy="12" r="8.6" fill="none" ${S}/><circle cx="12" cy="12" r="4.4" ${F} ${S}/><circle cx="12" cy="12" r="1.5" fill="currentColor"/><path d="M12 1.6V4.4M12 19.6V22.4M1.6 12H4.4M19.6 12H22.4" fill="none" ${S}/>`,
+  lock: `<rect x="4.8" y="10.8" width="14.4" height="10.4" rx="2.8" ${F} ${S}/><path d="M8 10.8V8.2a4 4 0 0 1 8 0v2.6" fill="none" ${S}/><circle cx="12" cy="16" r="1.5" fill="currentColor"/>`,
+  check: `<path d="M4.6 12.8L9.6 17.8L19.6 6.4" fill="none" stroke="currentColor" stroke-width="3.6" stroke-linecap="round" stroke-linejoin="round"/>`,
+  trophy: `<path d="M7.2 3.4H16.8V9.4a4.8 4.8 0 0 1-9.6 0Z" ${F} ${S}/><path d="M7.2 5.4H4.2C4.2 8.6 5.6 10.2 7.6 10.6M16.8 5.4H19.8C19.8 8.6 18.4 10.2 16.4 10.6" fill="none" ${S}/><path d="M12 14.4V18.2M8 20.6H16" fill="none" ${S}/>`,
+  star: `<path d="M12 2.6L14.9 8.6L21.4 9.4L16.6 13.9L17.9 20.4L12 17.2L6.1 20.4L7.4 13.9L2.6 9.4L9.1 8.6Z" ${F} ${S}/>`,
+  medal: `<circle cx="12" cy="14.4" r="6.2" ${F} ${S}/><path d="M8 2.8L10.6 8.6M16 2.8L13.4 8.6" fill="none" ${S}/><path d="M12 11.6L12.9 13.4L14.8 13.6L13.4 14.9L13.8 16.8L12 15.9L10.2 16.8L10.6 14.9L9.2 13.6L11.1 13.4Z" fill="currentColor"/>`,
+  retry: `<path d="M20.2 12A8.2 8.2 0 1 1 17.8 6.2" fill="none" ${S}/><path d="M20.6 2.8V8.4H15" fill="none" ${S}/>`,
+  bolt: `<path d="M13.4 2.4L5 13.4H11.2L10.2 21.6L19 10.2H12.6Z" ${F} ${S}/>`,
+  flag: `<path d="M5.6 21.4V3.2" fill="none" ${S}/><path d="M5.6 4.4C9 2.2 11.6 6.6 15 4.8C16.6 4 17.8 4 19 4.4V13C17.8 12.6 16.6 12.6 15 13.4C11.6 15.2 9 10.8 5.6 13Z" ${F} ${S}/>`,
+  play: `<path d="M7 3.8L19.6 12L7 20.2Z" ${F} ${S}/>`,
+  close: `<path d="M5.4 5.4L18.6 18.6M18.6 5.4L5.4 18.6" fill="none" stroke="currentColor" stroke-width="3.2" stroke-linecap="round"/>`,
+};
+
 export const ICON_NAMES = Object.keys(ICONS);
+export const GLYPH_NAMES = Object.keys(GLYPHS);
 
 let mounted = false;
 export function mountIcons() {
   if (mounted || typeof document === 'undefined') return;
   mounted = true;
-  const symbols = Object.entries(ICONS)
-    .map(([name, body]) => `<symbol id="ic-${name}" viewBox="0 0 64 64">${body}</symbol>`)
-    .join('');
+  const symbols =
+    Object.entries(ICONS)
+      .map(([name, body]) => `<symbol id="ic-${name}" viewBox="0 0 64 64">${body}</symbol>`)
+      .join('') +
+    Object.entries(GLYPHS)
+      .map(([name, body]) => `<symbol id="gl-${name}" viewBox="0 0 24 24">${body}</symbol>`)
+      .join('');
   const wrap = document.createElement('div');
   wrap.setAttribute('aria-hidden', 'true');
   wrap.style.cssText = 'position:absolute;width:0;height:0;overflow:hidden;pointer-events:none';
@@ -395,4 +418,10 @@ export function mountIcons() {
 export function icon(name, cls = '') {
   if (!ICONS[name]) console.warn('icono desconocido:', name);
   return `<svg class="ic ic-${name} ${cls}" viewBox="0 0 64 64" aria-hidden="true" focusable="false"><use href="#ic-${name}"/></svg>`;
+}
+
+// Glifo de interfaz (monocromo, hereda el color del texto).
+export function glyph(name, cls = '') {
+  if (!GLYPHS[name]) console.warn('glifo desconocido:', name);
+  return `<svg class="gl gl-${name} ${cls}" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><use href="#gl-${name}"/></svg>`;
 }

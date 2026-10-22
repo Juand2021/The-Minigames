@@ -7,11 +7,11 @@ export const cover = {
 };
 
 export const intros = {
-  sudoku: 'Prueba 1: Sudoku. Sé que lo tuyo son los números. No me hagas quedar mal.',
-  crossword: 'Prueba 2: Crucigrama. Ojo: las pistas hablan de nosotros. Si fallas, es sospechoso.',
-  pool: 'Prueba 3: Billar. Aquí no vale culpar a la mesa.',
-  gym: 'Prueba 5: Gym. Tres ejercicios, diez repeticiones cada uno y cero excusas. ¡Esa creatina no se toma sola!',
-  craft: 'Prueba 4: Maincra. Sobrevive a la noche, protege los Four Lokos y a Juan… y luego ¡a construir!',
+  sudoku: 'Sé que lo tuyo son los números. No me hagas quedar mal.',
+  crossword: 'Ojo: las pistas hablan de nosotros. Si fallas, es sospechoso.',
+  pool: 'Aquí no vale culpar a la mesa.',
+  gym: 'Tres ejercicios, diez repeticiones cada uno y cero excusas. ¡Esa creatina no se toma sola!',
+  craft: 'Sobrevive a la noche, protege los Four Lokos y a Juan… y luego ¡a construir!',
 };
 
 export const wins = {

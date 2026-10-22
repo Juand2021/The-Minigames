@@ -1,0 +1,681 @@
+/* ============================================================
+   Capa "arcade": tipografía de videojuego, botones con relieve,
+   paneles de HUD y fichas de misión. Se carga después de main.css.
+   ============================================================ */
+:root {
+  --font: 'Chakra Petch', 'Segoe UI', system-ui, -apple-system, sans-serif;
+  --display: 'Bungee', 'Chakra Petch', Impact, 'Arial Black', sans-serif;
+  --ink: #12062a;
+  --ink-2: #0c0420;
+  --panel: linear-gradient(180deg, rgba(64, 34, 112, 0.94), rgba(32, 14, 68, 0.95));
+  --panel-dark: linear-gradient(180deg, rgba(24, 10, 52, 0.92), rgba(14, 5, 34, 0.95));
+}
+
+html,
+body {
+  font-family: var(--font);
+  font-weight: 600;
+  letter-spacing: 0.01em;
+}
+
+/* Bungee solo existe en peso normal: se fija para que no se "engorde" artificialmente */
+h1,
+h2,
+h3,
+.display,
+.display-sm,
+.btn,
+.ribbon,
+.panel-tag,
+.state,
+.tile,
+.hud-name,
+.hud-time,
+.level-text b,
+.stat b,
+.pip,
+.topbar h2 {
+  font-family: var(--display);
+  font-weight: 400;
+  letter-spacing: 0.02em;
+}
+
+/* ---------- logotipo / títulos con contorno ---------- */
+.display {
+  max-width: 9em;
+  font-size: clamp(1.9rem, 9.4vw, 2.7rem);
+  line-height: 1.02;
+  text-transform: uppercase;
+  color: #fff;
+  background: none;
+  -webkit-background-clip: border-box;
+  background-clip: border-box;
+  filter: none;
+  -webkit-text-stroke: 7px var(--ink);
+  paint-order: stroke fill;
+  text-shadow: 0 5px 0 #7a35e0, 0 9px 0 var(--ink), 0 16px 26px rgba(255, 79, 163, 0.5);
+}
+.display-sm {
+  font-size: clamp(1.7rem, 8.4vw, 2.3rem);
+  text-transform: uppercase;
+  line-height: 1.05;
+  color: #fff;
+  -webkit-text-stroke: 6px var(--ink);
+  paint-order: stroke fill;
+  text-shadow: 0 4px 0 #7a35e0, 0 7px 0 var(--ink), 0 12px 22px rgba(0, 0, 0, 0.4);
+}
+.result.lose .display-sm {
+  text-shadow: 0 4px 0 #c0264a, 0 7px 0 var(--ink), 0 12px 22px rgba(0, 0, 0, 0.4);
+}
+.eyebrow {
+  font-family: var(--font);
+  font-weight: 700;
+  letter-spacing: 0.18em;
+  font-size: 0.74rem;
+}
+.lead {
+  padding: 7px 22px;
+  font-family: var(--font);
+  font-size: 0.82rem;
+  font-weight: 700;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: #fff;
+  background: linear-gradient(90deg, transparent, rgba(255, 79, 163, 0.45) 20%, rgba(155, 107, 255, 0.45) 80%, transparent);
+}
+
+/* ---------- paneles de HUD (sustituyen al vidrio) ---------- */
+.glass {
+  background: var(--panel);
+  -webkit-backdrop-filter: none;
+  backdrop-filter: none;
+  border: 3px solid var(--ink);
+  border-radius: 16px;
+  box-shadow: inset 0 0 0 2px rgba(255, 255, 255, 0.13), 0 5px 0 var(--ink-2), 0 14px 24px rgba(0, 0, 0, 0.35);
+}
+.glass::before {
+  display: none;
+}
+.glass::after {
+  background: linear-gradient(180deg, rgba(255, 255, 255, 0.16), transparent 42%);
+}
+.panel-tag {
+  position: absolute;
+  top: -15px;
+  left: 14px;
+  z-index: 2;
+  padding: 4px 12px;
+  font-size: 0.68rem;
+  letter-spacing: 0.14em;
+  color: var(--ink);
+  background: linear-gradient(180deg, #ffe08a, #ffb938);
+  border: 3px solid var(--ink);
+  border-radius: 8px;
+  transform: skewX(-10deg);
+  box-shadow: 0 3px 0 var(--ink-2);
+}
+
+/* ficha de misión con esquinas de mira */
+.briefing {
+  position: relative;
+  width: 100%;
+  max-width: 360px;
+  padding: 26px 20px 20px;
+  background: var(--panel);
+  border: 3px solid var(--ink);
+  border-radius: 16px;
+  box-shadow: inset 0 0 0 2px rgba(255, 255, 255, 0.13), 0 5px 0 var(--ink-2), 0 16px 26px rgba(0, 0, 0, 0.4);
+}
+.briefing::before,
+.briefing::after {
+  content: '';
+  position: absolute;
+  width: 16px;
+  height: 16px;
+  border: 0 solid var(--accent2);
+  opacity: 0.9;
+}
+.briefing::before {
+  right: 10px;
+  top: 10px;
+  border-top-width: 3px;
+  border-right-width: 3px;
+}
+.briefing::after {
+  left: 10px;
+  bottom: 10px;
+  border-bottom-width: 3px;
+  border-left-width: 3px;
+}
+.briefing p {
+  margin: 0;
+  font-size: 1.04rem;
+  line-height: 1.5;
+  font-weight: 600;
+  text-align: center;
+}
+
+/* cinta con el número de prueba */
+.ribbon {
+  margin: 0;
+}
+.ribbon span {
+  display: inline-block;
+  padding: 7px 24px;
+  font-size: 0.86rem;
+  letter-spacing: 0.1em;
+  color: #3b1d00;
+  background: linear-gradient(180deg, #ffe08a, #ffb938);
+  border: 3px solid var(--ink);
+  border-radius: 6px;
+  transform: skewX(-12deg);
+  box-shadow: 0 4px 0 #a86a00, 0 8px 0 var(--ink);
+}
+.ribbon i {
+  margin: 0 5px;
+  font-style: normal;
+  opacity: 0.5;
+}
+
+/* fichas de datos (tiempo, objetivo, intento…) */
+.stats {
+  width: 100%;
+  max-width: 360px;
+  display: grid;
+  grid-template-columns: 0.9fr 1.3fr;
+  gap: 10px;
+}
+.stats.single {
+  grid-template-columns: 1fr;
+  max-width: 190px;
+}
+.stat {
+  display: grid;
+  grid-template-columns: auto 1fr;
+  grid-template-areas: 'ic l' 'ic v';
+  column-gap: 10px;
+  row-gap: 1px;
+  align-items: center;
+  padding: 9px 12px 9px 9px;
+  text-align: left;
+  background: var(--panel-dark);
+  border: 3px solid var(--ink);
+  border-radius: 14px;
+  box-shadow: inset 0 0 0 2px rgba(255, 255, 255, 0.1), 0 4px 0 var(--ink-2);
+}
+.stat-ic {
+  grid-area: ic;
+  display: grid;
+  place-items: center;
+  width: 40px;
+  height: 40px;
+  color: var(--ink);
+  background: linear-gradient(180deg, #ffe08a, #ffb938);
+  border: 3px solid var(--ink);
+  border-radius: 11px;
+  box-shadow: inset 0 2px 0 rgba(255, 255, 255, 0.55);
+}
+.stat-ic .gl {
+  width: 23px;
+  height: 23px;
+}
+.stat-l {
+  grid-area: l;
+  font-size: 0.62rem;
+  font-weight: 700;
+  letter-spacing: 0.2em;
+  color: var(--faint);
+}
+.stat b {
+  grid-area: v;
+  font-size: 1.05rem;
+  line-height: 1.1;
+  color: #fff;
+  min-width: 0;
+}
+.stat:nth-child(2) b {
+  font-size: 0.78rem;
+  line-height: 1.2;
+}
+.stats.single .stat b {
+  font-size: 1.05rem;
+}
+
+.tile {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  padding: 4px 9px;
+  font-size: 0.74rem;
+  color: #fff;
+  background: var(--panel-dark);
+  border: 2px solid var(--ink);
+  border-radius: 8px;
+  box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.12);
+}
+.tile .gl {
+  width: 15px;
+  height: 15px;
+  color: var(--accent2);
+}
+
+/* ---------- botones de juego ---------- */
+.btn {
+  min-height: 62px;
+  border: 3px solid var(--ink);
+  border-radius: 16px;
+  font-size: 1.08rem;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: #fff;
+  background: linear-gradient(180deg, #7d5bff 0%, #5a35e6 55%, #4524c0 100%);
+  -webkit-backdrop-filter: none;
+  backdrop-filter: none;
+  box-shadow: 0 7px 0 #261073, 0 7px 0 3px var(--ink), 0 16px 22px rgba(0, 0, 0, 0.4), inset 0 3px 0 rgba(255, 255, 255, 0.4), inset 0 -4px 0 rgba(0, 0, 0, 0.18);
+  text-shadow: 0 2px 0 rgba(0, 0, 0, 0.4);
+  transition: transform 0.07s, box-shadow 0.07s, filter 0.2s;
+  margin-bottom: 9px;
+}
+.btn:active {
+  transform: translateY(6px);
+  box-shadow: 0 1px 0 #261073, 0 1px 0 3px var(--ink), 0 4px 8px rgba(0, 0, 0, 0.4), inset 0 3px 0 rgba(255, 255, 255, 0.4), inset 0 -4px 0 rgba(0, 0, 0, 0.18);
+}
+.btn-primary {
+  color: #fff;
+  background: linear-gradient(180deg, #ff9ad0 0%, #ff4fa3 55%, #e0267f 100%);
+  box-shadow: 0 7px 0 #8c0f4d, 0 7px 0 3px var(--ink), 0 16px 26px rgba(255, 79, 163, 0.4), inset 0 3px 0 rgba(255, 255, 255, 0.55), inset 0 -4px 0 rgba(120, 0, 60, 0.25);
+  text-shadow: 0 2px 0 rgba(110, 0, 60, 0.55);
+}
+.btn-primary:active {
+  box-shadow: 0 1px 0 #8c0f4d, 0 1px 0 3px var(--ink), 0 4px 8px rgba(255, 79, 163, 0.35), inset 0 3px 0 rgba(255, 255, 255, 0.55), inset 0 -4px 0 rgba(120, 0, 60, 0.25);
+}
+.btn-primary::after {
+  border-radius: 12px;
+  inset: 3px;
+  background: linear-gradient(110deg, transparent 38%, rgba(255, 255, 255, 0.5) 50%, transparent 62%);
+  background-size: 260% 100%;
+}
+.btn-ghost {
+  min-height: 52px;
+  font-size: 0.9rem;
+  color: #e9defa;
+  background: linear-gradient(180deg, #43296f 0%, #2f1a55 100%);
+  box-shadow: 0 6px 0 var(--ink-2), 0 6px 0 3px var(--ink), 0 12px 18px rgba(0, 0, 0, 0.35), inset 0 2px 0 rgba(255, 255, 255, 0.22);
+  text-shadow: 0 2px 0 rgba(0, 0, 0, 0.4);
+}
+.btn-ghost:active {
+  box-shadow: 0 1px 0 var(--ink-2), 0 1px 0 3px var(--ink), inset 0 2px 0 rgba(255, 255, 255, 0.22);
+}
+.btn-danger {
+  color: #fff;
+  background: linear-gradient(180deg, #ff8097 0%, #ff3d63 55%, #c91c44 100%);
+  box-shadow: 0 6px 0 #7a0d27, 0 6px 0 3px var(--ink), 0 12px 18px rgba(0, 0, 0, 0.35), inset 0 2px 0 rgba(255, 255, 255, 0.45);
+  text-shadow: 0 2px 0 rgba(90, 0, 20, 0.5);
+}
+.btn .gl {
+  width: 1.25em;
+  height: 1.25em;
+  margin-left: 0.3em;
+  vertical-align: -0.24em;
+  filter: drop-shadow(0 2px 0 rgba(0, 0, 0, 0.35));
+}
+.btn-go .gl {
+  animation: nudge 0.9s ease-in-out infinite;
+}
+.icon-btn {
+  width: 48px;
+  height: 48px;
+  border: 3px solid var(--ink);
+  border-radius: 14px;
+  background: linear-gradient(180deg, #43296f, #2f1a55);
+  box-shadow: 0 4px 0 var(--ink-2), inset 0 2px 0 rgba(255, 255, 255, 0.25);
+}
+.icon-btn:active {
+  transform: translateY(3px);
+  box-shadow: 0 1px 0 var(--ink-2), inset 0 2px 0 rgba(255, 255, 255, 0.25);
+}
+
+/* ---------- portada ---------- */
+.cover .orb-xl {
+  box-shadow: inset 0 0 0 2px rgba(255, 255, 255, 0.45), inset 0 -10px 20px rgba(80, 20, 140, 0.35), 0 0 0 4px var(--ink), 0 14px 30px rgba(8, 0, 22, 0.5);
+}
+.journey {
+  padding: 26px 16px 16px;
+}
+.journey p {
+  font-family: var(--font);
+  font-size: 0.8rem;
+  font-weight: 700;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--muted);
+}
+.pip {
+  border: 3px solid var(--ink);
+  border-radius: 13px;
+  background: var(--panel-dark);
+  box-shadow: inset 0 0 0 2px rgba(255, 255, 255, 0.1), 0 3px 0 var(--ink-2);
+}
+.pip .ic {
+  width: 1.35em;
+  height: 1.35em;
+}
+.pip.done {
+  color: #0a3d27;
+  background: linear-gradient(180deg, #8ff5c4, #3ed08a);
+  box-shadow: inset 0 2px 0 rgba(255, 255, 255, 0.55), 0 3px 0 #166b46, 0 3px 0 3px var(--ink);
+}
+.pip .gl {
+  width: 1.5em;
+  height: 1.5em;
+}
+.pip.next {
+  box-shadow: inset 0 0 0 2px rgba(255, 255, 255, 0.5), 0 3px 0 var(--ink-2), 0 0 18px rgba(255, 111, 181, 0.6);
+}
+
+/* ---------- mapa ---------- */
+.topbar h2 {
+  font-size: 1.5rem;
+  text-transform: uppercase;
+  -webkit-text-stroke: 5px var(--ink);
+  paint-order: stroke fill;
+  text-shadow: 0 3px 0 #7a35e0, 0 6px 0 var(--ink);
+}
+.topbar p {
+  font-family: var(--font);
+  font-size: 0.78rem;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+}
+.meter {
+  height: 20px;
+  padding: 3px;
+  border-radius: 10px;
+}
+.meter i {
+  border-radius: 6px;
+  background: repeating-linear-gradient(135deg, #5ee6a8 0 8px, #38c98a 8px 16px);
+  box-shadow: inset 0 2px 0 rgba(255, 255, 255, 0.45), 0 0 12px rgba(94, 230, 168, 0.55);
+}
+.level {
+  padding: 12px 14px;
+  border-radius: 18px;
+  box-shadow: inset 0 0 0 2px rgba(255, 255, 255, 0.12), 0 6px 0 var(--ink-2), 0 14px 22px rgba(0, 0, 0, 0.3);
+}
+.level:active:not(:disabled) {
+  transform: translateY(4px);
+  box-shadow: inset 0 0 0 2px rgba(255, 255, 255, 0.12), 0 2px 0 var(--ink-2);
+}
+.level-orb {
+  box-shadow: inset 0 0 0 2px rgba(255, 255, 255, 0.4), inset 0 -8px 16px rgba(80, 20, 140, 0.35), 0 0 0 3px var(--ink);
+}
+.level-text b {
+  font-size: 1.08rem;
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+}
+.level-text small {
+  font-family: var(--font);
+  font-size: 0.84rem;
+  font-weight: 600;
+}
+.level-meta {
+  gap: 7px;
+}
+.state {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 5px 10px;
+  font-size: 0.7rem;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  border: 2px solid var(--ink);
+  border-radius: 8px;
+}
+.state .gl {
+  width: 14px;
+  height: 14px;
+}
+.level.open .state {
+  color: #3b1d00;
+  background: linear-gradient(180deg, #ffe08a, #ffb938);
+  box-shadow: 0 3px 0 #a86a00;
+}
+.level.open .state .gl {
+  filter: none;
+}
+.level.done .state {
+  color: #0a3d27;
+  background: linear-gradient(180deg, #8ff5c4, #3ed08a);
+  box-shadow: 0 3px 0 #166b46;
+}
+.level.locked .state {
+  color: var(--faint);
+  background: rgba(0, 0, 0, 0.35);
+  box-shadow: none;
+}
+.level.open {
+  box-shadow: inset 0 0 0 2px rgba(255, 209, 102, 0.55), 0 6px 0 var(--ink-2), 0 0 24px rgba(255, 111, 181, 0.4);
+}
+
+/* ---------- intro y resultados ---------- */
+.bubble {
+  max-width: 360px;
+  font-family: var(--font);
+  font-size: 1.04rem;
+  font-weight: 600;
+}
+.prize {
+  font-family: var(--font);
+  font-weight: 700;
+}
+.prize::before {
+  display: block;
+  inset: -3px;
+  border-radius: 18px;
+}
+
+/* ---------- HUD dentro de los juegos ---------- */
+.hud {
+  min-height: 56px;
+  padding: 5px 8px;
+  border-radius: 16px;
+}
+.hud-btn {
+  width: 44px;
+  height: 44px;
+  display: grid;
+  place-items: center;
+  border: 3px solid var(--ink);
+  border-radius: 12px;
+  background: linear-gradient(180deg, #5a3a96, #3a2166);
+  box-shadow: 0 3px 0 var(--ink-2), inset 0 2px 0 rgba(255, 255, 255, 0.25);
+}
+.hud-btn:active {
+  transform: translateY(2px);
+  box-shadow: 0 1px 0 var(--ink-2), inset 0 2px 0 rgba(255, 255, 255, 0.25);
+}
+.hud-btn .ic {
+  width: 1.2em;
+  height: 1.2em;
+  margin: 0;
+}
+.hud-name {
+  font-size: 0.98rem;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+.hud-time {
+  min-width: 82px;
+  padding: 8px 12px;
+  font-size: 1.1rem;
+  letter-spacing: 0.06em;
+  color: #ffe08a;
+  background: linear-gradient(180deg, #0c0420, #1b0a3c);
+  border: 3px solid var(--ink);
+  border-radius: 10px;
+  box-shadow: inset 0 0 0 2px rgba(255, 224, 138, 0.25), inset 0 3px 8px rgba(0, 0, 0, 0.5);
+  text-shadow: 0 0 10px rgba(255, 209, 102, 0.55);
+}
+.hud-time.urgent {
+  color: #fff;
+  background: linear-gradient(180deg, #ff5c7a, #d81f48);
+  text-shadow: 0 2px 0 rgba(90, 0, 20, 0.5);
+}
+
+/* ---------- ventana de confirmación ---------- */
+.sheet {
+  border-radius: 20px;
+}
+.sheet h3 {
+  font-size: 1.15rem;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+.sheet p {
+  font-family: var(--font);
+  font-weight: 600;
+}
+.sheet .orb-sm {
+  box-shadow: inset 0 0 0 2px rgba(255, 255, 255, 0.4), 0 0 0 3px var(--ink);
+}
+
+/* ---------- tipografía dentro de los minijuegos ---------- */
+.sdk,
+.cw,
+.gy,
+.hp {
+  font-family: var(--font);
+}
+.sdk .cell {
+  font-family: var(--display);
+  font-weight: 400;
+}
+.sdk .key b,
+.cw .cwk {
+  font-family: var(--display);
+  font-weight: 400;
+}
+.cwc {
+  font-family: var(--display);
+  font-weight: 400;
+}
+.cw-clue-body small,
+.sdk-toast,
+.cw-toast,
+.gy-toast {
+  font-family: var(--font);
+}
+.gy-title b,
+.gy-count,
+.gy-big b,
+.gy-card-title,
+.gy-float {
+  font-family: var(--display);
+  font-weight: 400;
+}
+.gy-big small,
+.gy-card-text {
+  font-family: var(--font);
+}
+.hp-bubble b {
+  font-family: var(--display);
+  font-weight: 400;
+}
+
+/* ---------- textura sutil de pantalla (solo en menús) ---------- */
+body:not(.playing)::after {
+  content: '';
+  position: fixed;
+  inset: 0;
+  z-index: 5;
+  pointer-events: none;
+  background: repeating-linear-gradient(0deg, rgba(255, 255, 255, 0.028) 0 1px, transparent 1px 3px);
+}
+
+@keyframes nudge {
+  50% {
+    transform: translateX(5px);
+  }
+}
+
+.pips {
+  grid-template-columns: repeat(5, 1fr);
+  gap: 8px;
+}
+.pip {
+  border-radius: 11px;
+}
+
+.orb-xl,
+.orb-lg {
+  box-shadow: inset 0 0 0 2px rgba(255, 255, 255, 0.45), inset 0 -10px 20px rgba(80, 20, 140, 0.35), 0 0 0 4px var(--ink), 0 14px 30px rgba(8, 0, 22, 0.5);
+}
+
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.45em;
+  white-space: nowrap;
+  font-size: clamp(0.84rem, 4.3vw, 1.08rem);
+}
+.btn .gl {
+  margin-left: 0;
+}
+
+/* ---------- botones de los minijuegos con el mismo relieve de arcade ---------- */
+.sdk .tool,
+.cw .cwt {
+  border: 3px solid var(--ink);
+  border-radius: 12px;
+  background: linear-gradient(180deg, #52348f 0%, #33195c 100%);
+  box-shadow: 0 4px 0 var(--ink-2), inset 0 2px 0 rgba(255, 255, 255, 0.24);
+}
+.sdk .tool:active:not(:disabled),
+.cw .cwt:active:not(:disabled) {
+  transform: translateY(3px);
+  box-shadow: 0 1px 0 var(--ink-2), inset 0 2px 0 rgba(255, 255, 255, 0.24);
+}
+.sdk .tool em,
+.cw .cwt em {
+  font-family: var(--font);
+  font-size: 0.58rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+.sdk .tool u,
+.cw .cwt u {
+  font-family: var(--display);
+  font-weight: 400;
+  color: var(--ink);
+  background: linear-gradient(180deg, #ffe08a, #ffb938);
+  border: 2px solid var(--ink);
+}
+.sdk .tool.on {
+  background: linear-gradient(180deg, #ff9ad0, #e0267f);
+}
+.sdk .key,
+.cw .cwk {
+  border: 3px solid var(--ink);
+  border-radius: 11px;
+  background: linear-gradient(180deg, #5a3a9c 0%, #36195f 100%);
+  box-shadow: 0 5px 0 var(--ink-2), inset 0 2px 0 rgba(255, 255, 255, 0.26);
+}
+.sdk .key:active:not(.done),
+.cw .cwk:active {
+  transform: translateY(4px);
+  box-shadow: 0 1px 0 var(--ink-2), inset 0 2px 0 rgba(255, 255, 255, 0.26);
+}
+.cw .cwk.wide {
+  background: linear-gradient(180deg, #ff9ad0, #e0267f);
+}
+.cw-nav {
+  border: 3px solid var(--ink);
+  border-radius: 12px;
+  background: linear-gradient(180deg, #52348f, #33195c);
+  box-shadow: 0 4px 0 var(--ink-2), inset 0 2px 0 rgba(255, 255, 255, 0.24);
+}

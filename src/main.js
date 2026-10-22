@@ -1,4 +1,9 @@
+import '@fontsource/bungee/latin-400.css';
+import '@fontsource/chakra-petch/latin-500.css';
+import '@fontsource/chakra-petch/latin-600.css';
+import '@fontsource/chakra-petch/latin-700.css';
 import './styles/main.css';
+import './styles/arcade.css';
 import { GameShell } from './shell/shell.js';
 import { mountIcons } from './ui/icons.js';
 
