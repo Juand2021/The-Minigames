@@ -78,6 +78,16 @@ export const sfx = {
     [523, 659, 784].forEach((f, i) => tone(f, { dur: 0.22, delay: i * 0.06, type: 'triangle' }));
     buzz(20);
   },
+  // mascotas
+  bark() {
+    tone(420, { dur: 0.09, type: 'square', vol: 0.06, slide: 0.55 });
+    tone(380, { dur: 0.1, type: 'square', vol: 0.05, delay: 0.13, slide: 0.55 });
+    buzz(12);
+  },
+  meow() {
+    tone(520, { dur: 0.32, type: 'triangle', vol: 0.06, slide: 1.55 });
+    tone(800, { dur: 0.26, type: 'sine', vol: 0.04, delay: 0.22, slide: 0.55 });
+  },
   // billar
   click(v) {
     tone(260 + Math.min(v, 450) * 1.3, { dur: 0.05, type: 'square', vol: Math.min(0.07, 0.008 + v / 9000) });

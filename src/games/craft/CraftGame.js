@@ -9,6 +9,7 @@ import { centerX, centerY } from './engine/physics.js';
 import { sfx } from '../shared/sfx.js';
 import { burst } from '../shared/confetti.js';
 import { icon as ic } from '../../ui/icons.js';
+import { petSprites } from '../../ui/pets.js';
 import {
   maincraIntro,
   maincraIntroButton,
@@ -21,8 +22,8 @@ import {
   buildFinal,
 } from '../../content/maincra.js';
 
-const NAMES = { sofia: 'Laura', juan: 'Juan', zombie: 'Zombi', creeper: 'Creeper' };
-const PORTRAIT = { sofia: 'lauraPortrait', juan: 'juanPortrait', zombie: 'zombie0', creeper: 'creeper0' };
+const NAMES = { sofia: 'Laura', juan: 'Juan', zombie: 'Zombi', creeper: 'Creeper', molly: 'Molly', pirata: 'Gato Pirata' };
+const PORTRAIT = { sofia: 'lauraPortrait', juan: 'juanPortrait', zombie: 'zombie0', creeper: 'creeper0', molly: 'mollyPortrait', pirata: 'pirataPortrait' };
 const STEP = 1 / 60;
 
 // Captura el dedo sobre el elemento; algunos navegadores lanzan error con punteros ya liberados.
@@ -140,6 +141,7 @@ export function createCraft() {
       cardbox: q('.mc-cardbox'),
     };
     rd = new Renderer(cv);
+    Object.assign(rd.sprites, petSprites()); // Molly y el Gato Pirata
     // iconos
     els.heartImgs = { full: heartIcon('full').toDataURL(), half: heartIcon('half').toDataURL(), empty: heartIcon('empty').toDataURL() };
     els.lokoImg = rd.sprites.loko.toDataURL();
@@ -493,6 +495,39 @@ export function createCraft() {
     startSurvival();
   }
 
+  // Molly sigue a Laura y el Gato Pirata se queda junto a Juan (si Juan no está, también va con Laura).
+  const pets = { molly: { x: 0, y: 0, face: 1, init: false, walk: 0 }, pirata: { x: 0, y: 0, face: 1, init: false, walk: 0 } };
+  let petsT = 0;
+  function petEntities(laura, juan, standY) {
+    const dt = Math.min(0.1, Math.max(0, rd.time - petsT));
+    petsT = rd.time;
+    const out = [];
+    const follow = (key, name, tx, groundY) => {
+      const p = pets[key];
+      if (!p.init) {
+        p.x = tx;
+        p.y = groundY;
+        p.init = true;
+      }
+      const dx = tx - p.x;
+      const speed = Math.min(Math.abs(dx), 3.2 * dt + Math.abs(dx) * 4 * dt);
+      const moving = Math.abs(dx) > 0.25;
+      if (moving) {
+        p.x += Math.sign(dx) * Math.min(speed, Math.abs(dx));
+        p.face = Math.sign(dx);
+        p.walk += dt;
+      } else p.walk = 0;
+      p.y += (groundY - p.y) * Math.min(1, dt * 12);
+      const frame = moving ? 1 + (Math.floor(p.walk * 8) % 2) : 'sit';
+      out.push({ name: `${name}${frame}`, x: p.x, y: p.y - 1.15, w: 1.3, h: 1.15, face: p.face });
+    };
+    const feet = laura.y + laura.h;
+    follow('molly', 'molly', laura.x - laura.face * 1.5, feet);
+    if (juan && !juan.lost && !juan.carriedBy) follow('pirata', 'pirata', juan.x + 1.3, juan.y + juan.h);
+    else follow('pirata', 'pirata', laura.x - laura.face * 2.8, feet);
+    return out;
+  }
+
   function survivalScene() {
     const p = sim.player;
     const frame = (e) => (e.onGround && Math.abs(e.vx) > 0.1 ? 1 + (Math.floor(e.walkT * 2.4) % 2) : 0);
@@ -520,6 +555,7 @@ export function createCraft() {
       else img = rd.tex[d.kind === 'coal' ? B.COAL : d.kind === 'iron' ? B.IRON : d.id];
       entities.push({ img, x: d.x, y: d.y, w: d.w, h: d.h, face: 1, scale: d.kind === 'xp' || d.kind === 'loko' ? 1 : 0.45, bob: Math.round(Math.sin(rd.time * 5 + d.x) * 1.5) });
     }
+    entities.push(...petEntities(p, sim.juan, null));
     const tool = sim.mining ? 'pick' : p.ironSword ? 'iron' : 'sword';
     entities.push({
       name: p.swingT > 0 ? `sofiaSwing_${tool}` : `sofia${frame(p)}`,
@@ -659,6 +695,8 @@ export function createCraft() {
       entities: [
         { name: 'sofia0', x: sx, y: standY - 1.8, w: 0.6, h: 1.8, face: 1 },
         { name: `juan${Math.floor(rd.time * 2) % 3 === 0 ? 1 : 0}`, x: site.ox + blueprintSize(bp).w + 0.4, y: standY - 0.7, w: 0.9, h: 0.7, face: -1 },
+        { name: `mollysit`, x: sx - 1.3, y: standY - 1.15, w: 1.3, h: 1.15, face: 1 },
+        { name: `piratasit`, x: site.ox + blueprintSize(bp).w + 1.7, y: standY - 1.15, w: 1.3, h: 1.15, face: -1 },
       ],
     };
   }

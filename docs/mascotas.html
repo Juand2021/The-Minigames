@@ -1,0 +1,27 @@
+<!doctype html>
+<html lang="es">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Mascotas (desarrollo)</title>
+    <style>
+      body { margin: 0; padding: 10px; background: #2a2147; color: #fff; font-family: system-ui, sans-serif; }
+      .row { display: flex; gap: 8px; align-items: flex-end; margin-bottom: 8px; flex-wrap: wrap; }
+      canvas { image-rendering: pixelated; background: rgba(255,255,255,.08); border-radius: 8px; }
+      .s { width: 144px; height: 120px; }
+      .p { width: 190px; height: 200px; }
+    </style>
+  </head>
+  <body>
+    <div class="row" id="a"></div>
+    <div class="row" id="b"></div>
+    <div class="row" id="c"></div>
+    <script type="module">
+      import { drawPet, drawPortrait } from '/src/ui/pets.js';
+      const add = (host, who, frame, cls, flip) => { const c = document.createElement('canvas'); c.className = cls; drawPet(c, who, frame, flip); document.getElementById(host).appendChild(c); };
+      for (const f of ['sit', 0, 1, 2]) add('a', 'molly', f, 's');
+      for (const f of ['sit', 0, 1, 2]) add('b', 'pirata', f, 's');
+      for (const who of ['molly', 'pirata']) { const c = document.createElement('canvas'); c.className = 'p'; drawPortrait(c, who); document.getElementById('c').appendChild(c); }
+    </script>
+  </body>
+</html>

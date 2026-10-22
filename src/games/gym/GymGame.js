@@ -3,6 +3,7 @@ import { gymLines } from '../../content/story.js';
 import { sfx } from '../shared/sfx.js';
 import { burst } from '../shared/confetti.js';
 import { icon } from '../../ui/icons.js';
+import { petSprites } from '../../ui/pets.js';
 import { drawBody, drawFront, drawHurt, headSprite, outlineLayer, barbell, dumbbell, pullBar, px, HEAD_W, HEAD_H } from './laura.js';
 import { makeScene, LW, LH, FLOOR_Y, CX } from './scene.js';
 
@@ -54,6 +55,7 @@ export function createGym() {
   let particles = [];
   let taps = [];
   let beast = false;
+  let petHop = 0; // hora del último salto de las mascotas (alegría o susto)
   const timeouts = new Set();
 
   // estado de cada ejercicio
@@ -309,6 +311,7 @@ export function createGym() {
     reps++;
     updateHud();
     sfx.complete();
+    petHop = performance.now();
     sparkles(CX, FLOOR_Y - 60);
     floatText(`${reps}/${REPS}`, reps === REPS ? 'big' : '');
     if (reps < REPS) {
@@ -323,6 +326,7 @@ export function createGym() {
     sparkles(CX - 25, FLOOR_Y - 70);
     sparkles(CX + 25, FLOOR_Y - 70);
     chipEls[ex].classList.add('done');
+    petHop = performance.now();
     if (ex < EXERCISES.length - 1) {
       later(() => {
         ex++;
@@ -639,6 +643,21 @@ export function createGym() {
     // cara de lesión una vez que se golpea
     const hurtAt = { squat: 0.2, pullup: 0.5, curl: 0.45 }[id];
     if (f != null && f >= hurtAt) drawHurt(g, CX - HEAD_W / 2, headY, now);
+
+    // las mascotas miran desde el costado: saltan con cada repetición y se asustan cuando se lesiona
+    {
+      const pets = petSprites();
+      const since = now - petHop;
+      const jump = since < 420 ? Math.round(Math.sin((since / 420) * Math.PI) * 9) : 0;
+      const worried = f != null ? Math.round(Math.sin(now / 60) * 1) : 0;
+      const bobP = Math.round(Math.sin(now / 420) * 0.5 + 0.5);
+      g.drawImage(pets.mollysit, 6 + worried, 190 - jump - bobP);
+      g.save();
+      g.translate(LW - 6, 0);
+      g.scale(-1, 1);
+      g.drawImage(pets.piratasit, 0 + worried, 190 - Math.round(jump * 0.8) - (bobP ? 0 : 1));
+      g.restore();
+    }
 
     // aura de esfuerzo
     if (beast) {

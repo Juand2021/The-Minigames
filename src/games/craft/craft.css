@@ -419,6 +419,12 @@
   color: #ffe36e;
   text-shadow: 2px 2px 0 #3f3f3f;
 }
+.mc-dialog[data-who='molly'] .mc-dbox b {
+  color: #f59ab8;
+}
+.mc-dialog[data-who='pirata'] .mc-dbox b {
+  color: #f2c14e;
+}
 .mc-dialog[data-who='juan'] .mc-dbox b {
   color: #ffb066;
 }

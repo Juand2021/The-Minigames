@@ -103,6 +103,22 @@ export const gymLines = {
   loseReason: 'Te lesionaste tres veces en el gym. ¡Menos pereza y más velocidad: revancha!',
 };
 
+// Cuando Laura pide una pista (Sudoku y Crucigrama) llega una de sus mascotas.
+export const helperLines = {
+  molly: [
+    '¡Guau! Claro, Laura, ¡yo te ayudo!',
+    '¡Guau, guau! Déjame olfatear la respuesta…',
+    '¡Molly al rescate! Mira bien esta pista, Laura.',
+    '¡Claro que sí, Laura! Te voy a ayudar, guau.',
+  ],
+  pirata: [
+    'Arrr, claro Laura, este lobo de mar te ayuda.',
+    'Miau-arrr… mi único ojo ya vio la respuesta.',
+    '¡Por mi parche! Aquí está el tesoro, Laura.',
+    'Claro, Laura, te voy a ayudar. ¡Miau, arrr!',
+  ],
+};
+
 export const loses = [
   '¡Se acabó el tiempo! Pero no pasa nada, inténtalo otra vez.',
   'El reloj ganó esta ronda. La revancha es gratis.',

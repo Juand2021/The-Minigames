@@ -4,6 +4,7 @@ import { crosswordToasts } from '../../content/story.js';
 import { sfx } from '../shared/sfx.js';
 import { burst } from '../shared/confetti.js';
 import { icon } from '../../ui/icons.js';
+import { callHelper } from '../../ui/helper.js';
 
 const HINTS = 5;
 const ROWS = ['QWERTYUIOP', 'ASDFGHJKL', 'ZXCVBNM'];
@@ -334,6 +335,16 @@ export function createCrossword() {
     checkWin();
   }
 
+  // Laura pide una letra: una mascota llega, se lo dice y la revela.
+  let helping = false;
+  let gone = false;
+  async function askPet() {
+    if (helping || state.over || state.hints === 0) return;
+    helping = true;
+    await callHelper(root, ctx, () => !gone && reveal());
+    helping = false;
+  }
+
   function toggleSound() {
     sfx.setMuted(!sfx.muted);
     btn.sound.firstElementChild.innerHTML = icon(sfx.muted ? 'speaker-off' : 'speaker-on');
@@ -373,7 +384,7 @@ export function createCrossword() {
     if (act === 'prev') step(-1);
     else if (act === 'next') step(1);
     else if (act === 'check') check();
-    else if (act === 'reveal') reveal();
+    else if (act === 'reveal') askPet();
     else if (act === 'sound') toggleSound();
     else if (act === 'list') {
       sheet.hidden = false;
@@ -435,6 +446,7 @@ export function createCrossword() {
       observer?.disconnect();
       stopConfetti?.();
       document.removeEventListener('keydown', onKey);
+      gone = true;
       root?.remove();
     },
   };

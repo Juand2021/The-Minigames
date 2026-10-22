@@ -5,6 +5,8 @@ export const maincraIntro = [
   { who: 'sofia', scene: 'chestScene', text: '¡Mira, Juan! Llenamos el cofre con 5 Four Lokos para esta noche' },
   { who: 'sofia', scene: 'chestScene', text: 'Y también hay pastel, pan, manzanas y galletas… pero lo más valioso son los Four Lokos' },
   { who: 'juan', text: '…*mastica pasto con su mandarina en la cabeza*' },
+  { who: 'molly', text: '¡Guau, guau! (Molly también quiere defender el cofre)' },
+  { who: 'pirata', text: 'Arrr… mi único ojo vigila el horizonte, Laura. Nadie se lleva el tesoro.' },
   { who: 'zombie', text: 'Grrr… Fooour… Lookooos…' },
   { who: 'creeper', text: 'Ssssssss…' },
   { who: 'sofia', text: '¡Ni lo sueñen! Juan, detrás de mí. Voy a defender ese cofre.' },

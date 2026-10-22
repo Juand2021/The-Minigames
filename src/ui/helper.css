@@ -1,0 +1,135 @@
+/* Mascota que ayuda (cinemática de pista) */
+.hp {
+  position: absolute;
+  inset: -8px -16px -16px;
+  z-index: 60;
+  touch-action: none;
+  pointer-events: auto;
+}
+.hp-scrim {
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(circle at 50% 80%, rgba(20, 8, 40, 0.1), rgba(10, 0, 25, 0.5));
+  opacity: 0;
+  transition: opacity 0.4s;
+}
+.hp.in .hp-scrim {
+  opacity: 1;
+}
+.hp.out .hp-scrim {
+  opacity: 0;
+}
+.hp-stage {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 18px;
+  height: 210px;
+}
+.hp-pet {
+  position: absolute;
+  left: 0;
+  bottom: 0;
+  width: 144px;
+  height: 120px;
+  transform: translateX(-190px);
+  transition: transform 0.75s cubic-bezier(0.22, 1, 0.36, 1);
+  filter: drop-shadow(0 6px 8px rgba(0, 0, 0, 0.45));
+}
+.hp.in .hp-pet {
+  transform: translateX(26px);
+}
+.hp.out .hp-pet {
+  transform: translateX(calc(100vw + 40px));
+  transition: transform 0.65s cubic-bezier(0.55, 0, 0.9, 0.6);
+}
+.hp-pet canvas {
+  display: block;
+  width: 100%;
+  height: 100%;
+  image-rendering: pixelated;
+}
+.hp-pet.sit canvas {
+  animation: hpBreath 0.9s steps(2) infinite;
+}
+.hp-pet.hop {
+  animation: hpHop 0.5s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+.hp-bubble {
+  position: absolute;
+  left: 24px;
+  right: 24px;
+  top: 0;
+  padding: 12px 16px 14px;
+  border-radius: 22px;
+  opacity: 0;
+  transform: translateY(12px) scale(0.92);
+  transition: opacity 0.25s, transform 0.35s var(--spring);
+  background: rgba(32, 16, 64, 0.82);
+}
+.hp-bubble.show {
+  opacity: 1;
+  transform: none;
+}
+.hp-bubble::after {
+  content: '';
+  position: absolute;
+  left: 78px;
+  bottom: -11px;
+  border: 11px solid transparent;
+  border-top-color: rgba(32, 16, 64, 0.82);
+  border-bottom: 0;
+}
+.hp-bubble b {
+  display: block;
+  margin-bottom: 3px;
+  font-size: 0.72rem;
+  font-weight: 900;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: #f59ab8;
+}
+.hp-pirata .hp-bubble b {
+  color: #f2c14e;
+}
+.hp-bubble p {
+  margin: 0;
+  min-height: 2.6em;
+  font-size: 1rem;
+  font-weight: 800;
+  line-height: 1.3;
+}
+.hp.flash::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(circle at 30% 70%, rgba(255, 255, 255, 0.5), transparent 60%);
+  animation: hpFlash 0.7s ease-out forwards;
+  pointer-events: none;
+}
+
+@keyframes hpBreath {
+  50% {
+    transform: translateY(-3px);
+  }
+}
+@keyframes hpHop {
+  40% {
+    transform: translateX(26px) translateY(-34px) rotate(-5deg);
+  }
+}
+@keyframes hpFlash {
+  from {
+    opacity: 1;
+  }
+  to {
+    opacity: 0;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .hp *,
+  .hp::before {
+    transition-duration: 0.01ms !important;
+    animation-duration: 0.01ms !important;
+  }
+}

@@ -3,6 +3,7 @@ import { generatePuzzle, canPlace, rowOf, colOf, boxOf } from './generator.js';
 import { sfx } from '../shared/sfx.js';
 import { burst } from '../shared/confetti.js';
 import { icon } from '../../ui/icons.js';
+import { callHelper } from '../../ui/helper.js';
 import { sudokuToasts } from '../../content/story.js';
 
 const HINTS = 6;
@@ -344,6 +345,16 @@ export function createSudoku() {
     checkWin();
   }
 
+  // Laura pide ayuda: una mascota llega, se lo dice y aplica la pista.
+  let helping = false;
+  let gone = false;
+  async function askPet() {
+    if (helping || state.over || state.hints === 0) return;
+    helping = true;
+    await callHelper(root, ctx, () => !gone && hint());
+    helping = false;
+  }
+
   function toggleNotes() {
     state.notesMode = !state.notesMode;
     sfx.tap();
@@ -390,7 +401,7 @@ export function createSudoku() {
     if (act === 'undo') undo();
     else if (act === 'erase') erase();
     else if (act === 'notes') toggleNotes();
-    else if (act === 'hint') hint();
+    else if (act === 'hint') askPet();
     else if (act === 'sound') toggleSound();
   }
 
@@ -436,6 +447,7 @@ export function createSudoku() {
       observer?.disconnect();
       stopConfetti?.();
       document.removeEventListener('keydown', onKey);
+      gone = true;
       root?.remove();
     },
   };

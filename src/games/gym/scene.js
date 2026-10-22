@@ -147,11 +147,11 @@ export function makeScene(kind) {
     dumbbellRack(g, 108, 104);
     bench(g);
     kettlebell(g, 14, 166, '#e5484d');
-    kettlebell(g, 124, 190, '#3b82f6');
+    kettlebell(g, 90, 192, '#3b82f6');
   } else {
     uprights(g);
-    kettlebell(g, 28, 190, '#ffd166');
-    kettlebell(g, 106, 192, '#5ee6a8');
+    kettlebell(g, 42, 192, '#ffd166');
+    kettlebell(g, 92, 192, '#5ee6a8');
   }
   return c;
 }

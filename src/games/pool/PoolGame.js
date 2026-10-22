@@ -9,12 +9,14 @@ import { poolLines, poolIntro } from '../../content/story.js';
 import { sfx } from '../shared/sfx.js';
 import { burst } from '../shared/confetti.js';
 import { icon } from '../../ui/icons.js';
+import { drawPet } from '../../ui/pets.js';
 
 const pick = (arr) => arr[Math.floor(Math.random() * arr.length)];
 const clamp = (v, a, b) => Math.max(a, Math.min(b, v));
 const MIN_DRAG = 12; // arrastres muy cerca de la blanca se ignoran
 
 export function createPool() {
+  let petEls = [];
   let root, ctx, cv, g, mainEl, bubbleEl, bannerEl, powerEl, fireBtn, fineL, fineR, villEl, heroEl, hintEl;
   let powerBox, thumbEl, powerLabel, introEl;
   let introStep = 0;
@@ -75,6 +77,7 @@ export function createPool() {
         <canvas class="pl-vill" aria-label="El Quiz de Fenómenos de Transporte"></canvas>
         <div class="pl-bubble"><b>Quiz de F. de Transporte</b><p></p></div>
         <canvas class="pl-hero" aria-label="Laura"></canvas>
+        <div class="pl-pets"><canvas class="pl-pet" data-pet="molly" aria-label="Molly"></canvas><canvas class="pl-pet" data-pet="pirata" aria-label="Gato Pirata"></canvas></div>
       </div>
       <div class="pl-trays">
         <div class="tray" data-who="V"><span class="tray-name">${icon('quiz')} Quiz</span><div class="slots"></div></div>
@@ -102,6 +105,7 @@ export function createPool() {
           <button class="pi-ready" hidden>¡Estoy lista para jugar! ${icon('pool')}</button>
         </div>
         <div class="pi-char pi-hero"><canvas></canvas></div>
+        <div class="pi-pets"><canvas data-pet="molly"></canvas><canvas data-pet="pirata"></canvas></div>
       </div>`;
 
     cv = root.querySelector('.pl-canvas');
@@ -133,6 +137,10 @@ export function createPool() {
     heroCv.style.height = `${portrait.height * 4}px`;
     villEl.style.visibility = 'hidden';
     heroEl.style.visibility = 'hidden';
+    // mascotas de Laura (en la barra de arriba y en la cinemática)
+    petEls = [...root.querySelectorAll('.pl-pet')];
+    for (const c of root.querySelectorAll('.pl-pet, .pi-pets canvas')) drawPet(c, c.dataset.pet, 'sit');
+    petEls.forEach((c) => (c.style.visibility = 'hidden'));
     root.querySelectorAll('.tray').forEach((t) => (trayEls[t.dataset.who] = t.querySelector('.slots')));
     refreshTrays();
   }
@@ -328,6 +336,7 @@ export function createPool() {
     }
     if (mine && out.pocketed.some((i) => i !== 0)) react(villEl, 'hurt');
     if (!mine && out.pocketed.some((i) => i !== 0)) react(heroEl, 'hurt');
+    if (mine && out.pocketed.some((i) => i !== 0)) petEls.forEach((p, i) => setTimeout(() => react(p, 'hop'), i * 120));
 
     if (!mine && !out.foul && !out.continueTurn) {
       later(() => {
@@ -698,6 +707,7 @@ export function createPool() {
       introEl.remove();
       villEl.style.visibility = '';
       heroEl.style.visibility = '';
+      petEls.forEach((p) => (p.style.visibility = ''));
       phase = 'aim';
       defaultAim();
       setControls();
