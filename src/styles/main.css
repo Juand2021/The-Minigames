@@ -690,3 +690,115 @@ h3 {
     animation: none !important;
   }
 }
+
+/* ---------- ventana de confirmación ---------- */
+.modal {
+  position: fixed;
+  inset: 0;
+  z-index: 100;
+  display: grid;
+  place-items: center;
+  padding: 24px;
+  background: rgba(10, 4, 24, 0.45);
+  animation: fadeIn 0.2s ease-out;
+}
+.modal.out {
+  animation: fadeOut 0.2s ease-in forwards;
+}
+.sheet {
+  width: 100%;
+  max-width: 340px;
+  padding: 24px 20px 20px;
+  display: grid;
+  justify-items: center;
+  gap: 10px;
+  text-align: center;
+  animation: popIn 0.35s var(--spring);
+}
+.sheet h3 {
+  font-size: 1.35rem;
+}
+.sheet p {
+  margin: 0 0 6px;
+  color: var(--muted);
+  font-size: 1rem;
+  line-height: 1.4;
+}
+.sheet-actions {
+  width: 100%;
+  display: grid;
+  gap: 10px;
+}
+.sheet-actions .btn {
+  max-width: none;
+}
+.orb-sm {
+  width: 64px;
+  height: 64px;
+  font-size: 2rem;
+}
+.btn-danger {
+  min-height: 48px;
+  font-size: 0.98rem;
+  color: #ffd6de;
+  background: rgba(255, 92, 122, 0.16);
+  box-shadow: inset 0 0 0 1px rgba(255, 92, 122, 0.55);
+}
+
+/* ---------- tarjeta del premio en el mapa ---------- */
+.prize-card {
+  grid-template-columns: 64px 1fr;
+  margin-top: 4px;
+  box-shadow: 0 8px 22px rgba(8, 0, 22, 0.22), 0 0 0 2px rgba(255, 209, 102, 0.7), 0 0 26px rgba(255, 209, 102, 0.35);
+}
+.prize-card .level-text b {
+  color: var(--accent2);
+}
+
+/* ---------- aviso para girar el celular ---------- */
+.rotate {
+  display: none;
+}
+@media (orientation: landscape) and (max-height: 520px) {
+  .rotate {
+    position: fixed;
+    inset: 0;
+    z-index: 200;
+    display: grid;
+    place-items: center;
+    align-content: center;
+    gap: 12px;
+    padding: 24px;
+    text-align: center;
+    font-size: 1.15rem;
+    background: rgba(18, 8, 36, 0.92);
+    -webkit-backdrop-filter: blur(18px);
+    backdrop-filter: blur(18px);
+  }
+  .rotate span {
+    font-size: 3rem;
+    animation: tilt 1.6s ease-in-out infinite;
+  }
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+}
+@keyframes fadeOut {
+  to {
+    opacity: 0;
+  }
+}
+@keyframes popIn {
+  from {
+    opacity: 0;
+    transform: scale(0.9) translateY(10px);
+  }
+}
+@keyframes tilt {
+  50% {
+    transform: rotate(-90deg);
+  }
+}

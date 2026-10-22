@@ -343,6 +343,7 @@ export function createCrossword() {
     if (state.over) return;
     for (const [i, ch] of solution) if (state.letters.get(i) !== ch) return;
     state.over = true;
+    ctx.freeze?.(); // completo: el reloj ya no corre durante la celebración
     state.sel = -1;
     refresh();
     root.classList.add('won');

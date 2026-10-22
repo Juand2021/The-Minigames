@@ -559,6 +559,7 @@ export function createCraft() {
     stage = 'buildIntro';
     audio.music(true);
     await dialog(buildIntros[bp.id], `¡A construir! (${i + 1}/3)`);
+    if (ended) return;
     stage = 'build';
     els.bhud.hidden = false;
     els.btitle.textContent = `${i + 1}/3 · ${bp.title}`;

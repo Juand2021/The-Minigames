@@ -72,3 +72,18 @@ console.log(`partidas terminadas: ${finished}/${GAMES} · tiros medios: ${(total
 console.log('victorias', wins);
 if (finished < GAMES * 0.9) throw new Error('demasiadas partidas sin terminar');
 console.log('OK');
+
+// 3) La 8 en la apertura vuelve a la mesa y la partida sigue
+{
+  const m = new Match();
+  m.beginShot();
+  const eight = m.balls.find((b) => b.id === 8);
+  eight.pocketed = true;
+  m.report.pocketed.push(8);
+  m.report.firstContact = 1;
+  const out = m.endShot();
+  if (m.winner || eight.pocketed || !out.eightRespotted) throw new Error('la 8 en la apertura debería volver a la mesa');
+  const overlap = m.balls.some((b) => b.id !== 8 && !b.pocketed && Math.hypot(b.x - eight.x, b.y - eight.y) < 2 * R - 0.5);
+  if (overlap) throw new Error('la 8 quedó encima de otra bola');
+  console.log('8 en la apertura: vuelve a la mesa OK');
+}

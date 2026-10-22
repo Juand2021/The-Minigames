@@ -362,6 +362,7 @@ export function createSudoku() {
       if (state.v[i] !== state.solution[i]) return;
     }
     state.over = true;
+    ctx.freeze?.(); // resuelto: el reloj ya no corre durante la celebración
     state.sel = -1;
     refresh();
     root.classList.add('won');

@@ -301,6 +301,7 @@ export function createPool() {
     const out = match.endShot();
     refreshTrays();
     const mine = who === 'P';
+    if (out.eightRespotted) banner('¡LA 8 VUELVE!', 'En la apertura no cuenta', 2200, 'good');
 
     if (out.assignedTo) {
       if (mine) {
@@ -339,6 +340,7 @@ export function createPool() {
 
   function endGame(out) {
     ended = true;
+    ctx.freeze?.(); // la partida terminó: el reloj ya no corre
     phase = 'over';
     setControls();
     const youWin = match.winner === 'P';
@@ -670,6 +672,7 @@ export function createPool() {
   function endIntro() {
     if (phase !== 'intro') return;
     phase = 'intro-out';
+    ctx.hold?.(false); // empieza a correr el reloj
     clearInterval(introTimer);
     sfx.tap();
     const fly = (from, to, fade = false) => {
@@ -750,6 +753,7 @@ export function createPool() {
       if (location.search.includes('debug')) window.__poolDebug = { match, endGame };
       defaultAim();
       setControls();
+      ctx.hold?.(true); // el tiempo no corre mientras se lee la cinemática
       showIntroStep();
       last = performance.now();
       raf = requestAnimationFrame(frame);

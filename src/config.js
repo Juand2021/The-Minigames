@@ -8,6 +8,7 @@ export const LEVELS = [
 
 // SOLO PRUEBAS: true deja abiertos todos los niveles desde el mapa.
 // Volver a poner false antes de entregar el juego.
-export const UNLOCK_ALL = true;
+// (con ?locked en la URL se prueba el modo real, con niveles bloqueados)
+export const UNLOCK_ALL = true && !(typeof location !== 'undefined' && location.search.includes('locked'));
 
 export const STORAGE_KEY = 'juego-especial:v1';

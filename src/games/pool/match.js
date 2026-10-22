@@ -34,8 +34,14 @@ export class Match {
   // Aplica las reglas al terminar el tiro. Devuelve el resumen para la interfaz.
   endShot() {
     const shooter = this.turn;
+    // Meter la 8 en la apertura no hace perder: vuelve a su punto (regla habitual de salón).
+    if (this.isBreak && this.report.pocketed.includes(8)) {
+      this.report.pocketed = this.report.pocketed.filter((id) => id !== 8);
+      this.respotEight();
+      this.eightRespotted = true;
+    } else this.eightRespotted = false;
     const res = evaluateShot({ shooter, assign: this.assign, prePocketed: this.pre, report: this.report });
-    const out = { shooter, ...res, pocketed: this.report.pocketed.slice(), wasBreak: this.isBreak };
+    const out = { shooter, ...res, pocketed: this.report.pocketed.slice(), wasBreak: this.isBreak, eightRespotted: this.eightRespotted };
     this.isBreak = false;
 
     if (res.assignedTo) {
@@ -53,6 +59,20 @@ export class Match {
     if (!res.continueTurn) this.turn = opponent(shooter);
     this.inHand = res.ballInHand;
     return out;
+  }
+
+  respotEight() {
+    const b = this.balls.find((x) => x.id === 8);
+    b.pocketed = false;
+    b.sink = null;
+    b.vx = 0;
+    b.vy = 0;
+    const x = W / 2;
+    let y = H * 0.27;
+    // si el punto está ocupado, la sube por la línea central hasta un hueco
+    while (!canPlaceCue(this.balls.filter((o) => o.id !== 8), x, y) && y > 12) y -= 2;
+    b.x = x;
+    b.y = y;
   }
 
   // Coloca la blanca en un sitio libre (cerca del punto de salida).
