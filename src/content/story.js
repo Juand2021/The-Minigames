@@ -92,6 +92,15 @@ export const gymLines = {
   rep: ['¡Eso, Gym Rat! 💪', '¡Cacorra estaría orgullosa! 😎', '¡Ni el Four Loko te frena! 🥤', '¡Qué fuerza, mamacita! 🔥'],
   alternate: 'Alterna: ahora el otro brazo 😉',
   exerciseDone: ['¡Sentadillas listas! 🍑', '¡Dominadas listas! 🧗', '¡Curl listo! 💪'],
+  low: ['¡MÁS RÁPIDO! Se te acaba la energía ⚡', '¡No pares! Que se te cae 😱', '¡Dale, dale, dale! 🔥'],
+  fail: {
+    squat: ['¡La barra se le cayó encima! 😵', '¡Aplastada por la barra! 🏋️💥'],
+    pullup: ['¡Se soltó de la barra! 😵', '¡Cayó de espaldas! 💥'],
+    curl: ['¡Mancuerna en el pie! 🦶💥', '¡Se le cayó la pesa! 😵'],
+  },
+  recover: ['¡Arriba, campeona! Pierdes 2 repeticiones 💪', '¡Sacúdete y sigue! Pierdes 2 repeticiones 😤'],
+  out: '¡Sin vidas! Hoy el gym ganó 😵',
+  loseReason: 'Te lesionaste tres veces en el gym. ¡Menos pereza y más velocidad: revancha!',
 };
 
 export const loses = [

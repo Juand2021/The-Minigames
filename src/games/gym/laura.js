@@ -167,15 +167,27 @@ function torso(g, nx, ny) {
   px(g, nx - 8, top + 14, 16, 1, C.stripe);
 }
 
-// Mechones largos del pelo que caen por delante de los hombros
+// Melena larga: continúa, sin cortes, las dos columnas de pelo del retrato (con su misma onda y los mechones rubios)
+// y cae por delante de los hombros hasta terminar en puntas.
+const HAIR_W = [10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 9, 9, 8, 8, 7, 6, 5, 4, 3, 2];
 function hairFall(g, nx, ny) {
-  for (const s of [-1, 1]) {
-    for (let y = 0; y < 18; y++) {
-      const w = Math.round(Math.sin(y * 0.55) * 1.2);
-      const x0 = s < 0 ? nx - 17 + w : nx + 8 - w;
-      px(g, x0, ny - 1 + y, 9, 1, y % 5 === 2 ? C.hairMid : C.hair);
-      if (y % 4 === 1) px(g, x0 + (s < 0 ? 6 : 0), ny - 1 + y, 2, 1, C.hairHi);
-      px(g, s < 0 ? x0 + 7 : x0, ny - 1 + y, 2, 1, y % 4 === 0 ? C.blondSh : C.blond); // mechón rubio
+  for (let r = 0; r < HAIR_W.length; r++) {
+    const y = HEAD_H + r; // fila equivalente en el sprite de la cabeza
+    const wv = Math.round(Math.sin(y * 0.5) * 1.3);
+    const wd = HAIR_W[r];
+    const trim = Math.floor((10 - wd) / 2);
+    for (const side of [-1, 1]) {
+      const x0 = side < 0 ? nx - 16 + wv + trim : nx + 6 - wv + trim;
+      px(g, x0, ny + r, wd, 1, C.hair);
+      // reflejos y sombras del pelo
+      if ((r * 7 + (side < 0 ? 1 : 4)) % 5 === 0) px(g, x0 + 2 + ((r * 3) % 4), ny + r, 1, 2, C.hairHi);
+      if ((r + (side < 0 ? 0 : 2)) % 4 === 1) px(g, x0 + wd - 3, ny + r, 2, 1, C.hairMid);
+      // mechón rubio del lado de la cara, como en el retrato
+      if (r < 15) {
+        const w2 = Math.round(Math.sin(y * 0.55) * 1.2);
+        const bx = side < 0 ? nx - 8 + w2 : nx + 7 - w2;
+        px(g, bx, ny + r, 3, 1, (y + (side < 0 ? 0 : 2)) % 4 === 0 ? C.blondSh : C.blond);
+      }
     }
   }
 }
@@ -253,4 +265,27 @@ export function pullBar(g, cx, y) {
   px(g, cx - 38, y - 1, 76, 3, C.steel);
   px(g, cx - 38, y + 2, 76, 1, C.steelSh);
   px(g, cx - 38, y - 1, 76, 1, '#ffffff');
+}
+
+/* ---------- cara de lesión: ojos en X, chichón y estrellitas dando vueltas ---------- */
+export function drawHurt(g, hx, hy, now) {
+  // ojos en X (sobre los ojos del retrato: x 12 y 22, y 16)
+  for (const ex of [12, 22]) {
+    px(g, hx + ex, hy + 16, 4, 4, '#ffffff');
+    for (const [dx, dy] of [[0, 0], [3, 0], [1, 1], [2, 1], [1, 2], [2, 2], [0, 3], [3, 3]]) px(g, hx + ex + dx, hy + 16 + dy, 1, 1, '#b01030');
+  }
+  // chichón en la frente
+  px(g, hx + 24, hy + 8, 4, 3, '#ff8a8a');
+  px(g, hx + 25, hy + 8, 2, 1, '#ffd0d0');
+  // boca de dolor
+  px(g, hx + 17, hy + 25, 5, 1, '#7a1020');
+  px(g, hx + 18, hy + 26, 3, 2, '#7a1020');
+  // estrellas girando sobre la cabeza
+  for (let k = 0; k < 3; k++) {
+    const a = now / 220 + (k * Math.PI * 2) / 3;
+    const sx = hx + 19 + Math.cos(a) * 15;
+    const sy = hy - 2 + Math.sin(a) * 4;
+    px(g, sx - 1, sy, 3, 1, '#ffd166');
+    px(g, sx, sy - 1, 1, 3, '#ffd166');
+  }
 }

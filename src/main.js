@@ -17,4 +17,11 @@ document.addEventListener(
 );
 document.addEventListener('touchmove', (e) => e.touches.length > 1 && e.preventDefault(), { passive: false });
 
+// El juego es solo vertical: si el navegador lo permite (pantalla completa / app instalada), bloquea la orientación.
+try {
+  screen.orientation?.lock?.('portrait').catch(() => {});
+} catch {
+  /* Safari y otros no lo permiten: no pasa nada */
+}
+
 new GameShell(document.getElementById('app')).start();

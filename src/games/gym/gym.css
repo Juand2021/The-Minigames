@@ -327,3 +327,113 @@
     animation-iteration-count: 1 !important;
   }
 }
+
+/* ---------- vidas y energía ---------- */
+.gy-vitals {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 0 4px;
+}
+.gy-lives {
+  display: flex;
+  gap: 3px;
+  font-size: 1.15rem;
+  line-height: 1;
+}
+.gy-lives i {
+  font-style: normal;
+  transition: transform 0.3s var(--spring), filter 0.3s, opacity 0.3s;
+}
+.gy-lives i.off {
+  filter: grayscale(1) brightness(0.6);
+  opacity: 0.5;
+  transform: scale(0.8);
+}
+.gy-energy {
+  position: relative;
+  flex: 1;
+  height: 22px;
+  border-radius: 99px;
+  overflow: hidden;
+  background: rgba(0, 0, 0, 0.35);
+  border: 2px solid rgba(255, 255, 255, 0.22);
+}
+.gy-energy i {
+  position: absolute;
+  inset: 0 auto 0 0;
+  width: 100%;
+  border-radius: 99px;
+  background: linear-gradient(90deg, #ff5c7a 0%, #ffd166 40%, #5ee6a8 100%);
+  background-size: 100vw 100%;
+  transition: width 0.12s linear;
+}
+.gy-energy span {
+  position: absolute;
+  inset: 0;
+  display: grid;
+  place-items: center;
+  font-size: 0.62rem;
+  font-weight: 900;
+  letter-spacing: 0.12em;
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.7);
+}
+.gy-energy.low {
+  animation: gyLow 0.45s ease-in-out infinite;
+  border-color: var(--danger);
+}
+.gy-energy.low i {
+  background: var(--danger);
+}
+
+/* golpe: sacudida de pantalla y destello rojo */
+.gy-stage.hit .gy-canvas {
+  animation: gyHit 0.55s ease-out;
+}
+.gy-stage.hit::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-radius: 18px;
+  background: radial-gradient(circle, rgba(255, 60, 90, 0.5), transparent 70%);
+  pointer-events: none;
+  animation: gyFlash 0.6s ease-out forwards;
+}
+.gy-float.bad {
+  color: var(--danger);
+  font-size: 2.2rem;
+  text-shadow: 0 2px 0 #1b1022, 0 0 16px rgba(255, 92, 122, 0.9);
+}
+
+@keyframes gyLow {
+  50% {
+    transform: scale(1.03);
+    box-shadow: 0 0 14px rgba(255, 92, 122, 0.8);
+  }
+}
+@keyframes gyHit {
+  0%,
+  100% {
+    transform: translate(0, 0);
+  }
+  15% {
+    transform: translate(-7px, 3px) rotate(-0.8deg);
+  }
+  35% {
+    transform: translate(6px, -3px) rotate(0.6deg);
+  }
+  55% {
+    transform: translate(-4px, 2px);
+  }
+  75% {
+    transform: translate(3px, -1px);
+  }
+}
+@keyframes gyFlash {
+  from {
+    opacity: 1;
+  }
+  to {
+    opacity: 0;
+  }
+}
