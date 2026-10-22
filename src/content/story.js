@@ -1,5 +1,6 @@
 // Textos de la historia. Placeholders: reemplazar por humor/recuerdos propios.
 export const cover = {
+  eyebrow: 'Hecho con mucho cariño para ti 💜',
   title: 'El Gran Desafío',
   subtitle: '4 pruebas. 1 premio. 0 excusas.',
   button: 'Empezar',
